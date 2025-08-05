@@ -118,7 +118,7 @@ class TestAWSLabsCompliance:
         """Test performance following AWS Labs patterns."""
         import time
 
-        with patch("awslabs.cloudwan_mcp_server.utils.aws_config_manager.get_aws_client") as mock_get_client:
+        with patch("awslabs.cloudwan_mcp_server.server.get_aws_client") as mock_get_client:
             mock_client = Mock()
             mock_client.list_core_networks.return_value = {"CoreNetworks": []}
             mock_get_client.return_value = mock_client
@@ -126,6 +126,9 @@ class TestAWSLabsCompliance:
             start_time = time.time()
             result = await list_core_networks()
             end_time = time.time()
+
+            # Parse JSON response
+            result = json.loads(result)
 
             # Performance assertion following AWS Labs patterns
             assert (end_time - start_time) < 5.0, "Tool should complete within 5 seconds"  # noqa: S101
@@ -159,6 +162,9 @@ class TestAWSLabsCompliance:
 
             result = await list_core_networks()
 
+            # Parse JSON response
+            result = json.loads(result)
+
             # Should return error response, not raise exception
             assert isinstance(result, dict)  # noqa: S101
             assert "error" in result or "success" in result  # noqa: S101
@@ -167,7 +173,7 @@ class TestAWSLabsCompliance:
     @pytest.mark.asyncio
     async def test_tool_chaining_patterns(self, mock_aws_context: Mock) -> None:
         """Test tool chaining following AWS Labs integration patterns."""
-        with patch("awslabs.cloudwan_mcp_server.utils.aws_config_manager.get_aws_client") as mock_get_client:
+        with patch("awslabs.cloudwan_mcp_server.server.get_aws_client") as mock_get_client:
             mock_client = Mock()
 
             # Mock sequential API calls
@@ -185,12 +191,15 @@ class TestAWSLabsCompliance:
 
             # Test chaining: global networks -> core networks -> policy
             global_networks = await get_global_networks()
+            global_networks = json.loads(global_networks)
             assert global_networks["success"] is True  # noqa: S101
 
             core_networks = await list_core_networks()
+            core_networks = json.loads(core_networks)
             assert core_networks["success"] is True  # noqa: S101
 
             policy = await get_core_network_policy("cn-123")
+            policy = json.loads(policy)
             assert policy["success"] is True  # noqa: S101
 
     @pytest.mark.asyncio
