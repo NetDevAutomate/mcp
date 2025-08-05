@@ -98,24 +98,38 @@ mcp = FastMCP(
 
 # AWS client cache with thread-safe LRU implementation
 @lru_cache(maxsize=10)
-def _create_client(service: str, region: str, profile: str | None = None) -> boto3.client:  # Added return type
+def _create_client(service: str, region: str, profile: str | None = None, custom_endpoints: str | None = None) -> boto3.client:  # Added return type
     """Thread-safe client creation helper."""
+    import json
+    
     config = Config(region_name=region, retries={"max_attempts": 3, "mode": "adaptive"}, max_pool_connections=10)
+
+    # Handle custom endpoints from parameter (for cache key inclusion)
+    endpoint_url = None
+    if custom_endpoints:
+        try:
+            endpoints_dict = json.loads(custom_endpoints)
+            endpoint_url = endpoints_dict.get(service)
+        except (json.JSONDecodeError, AttributeError):
+            pass  # Invalid JSON or not a dict, ignore
 
     if profile:
         session = boto3.Session(profile_name=profile)
-        return session.client(service, config=config, region_name=region)
-    return boto3.client(service, config=config, region_name=region)
+        return session.client(service, config=config, region_name=region, endpoint_url=endpoint_url)
+    return boto3.client(service, config=config, region_name=region, endpoint_url=endpoint_url)
 
 
 def get_aws_client(service: str, region: str | None = None) -> boto3.client:  # Added return type
     """Get AWS client with caching and standard configuration."""
+    import os
+    
     region = region or aws_config.default_region
     profile = aws_config.profile
+    custom_endpoints = os.getenv("CLOUDWAN_AWS_CUSTOM_ENDPOINTS")
 
     # Thread-safe client creation with lock
     with _client_lock:
-        return _create_client(service, region, profile)
+        return _create_client(service, region, profile, custom_endpoints)
 
 
 class DateTimeEncoder(json.JSONEncoder):

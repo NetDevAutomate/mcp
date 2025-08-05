@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "cloudwan-mcp-server"
+name = "awslabs.cloudwan-mcp-server"
 version = "1.2.0"
 description = "AWS CloudWAN MCP Server for network analysis"
 requires-python = ">=3.11"
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-cloudwan-mcp-server = "awslabs.cloudwan_mcp_server.server:main"
+awslabs-cloudwan-mcp-server = "awslabs.cloudwan_mcp_server.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["awslabs"]
