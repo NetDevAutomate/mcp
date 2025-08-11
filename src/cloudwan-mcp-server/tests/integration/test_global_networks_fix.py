@@ -26,6 +26,7 @@ import asyncio
 import logging
 import sys
 
+
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 async def test_global_networks_response_model() -> bool | None:
     """Test the GlobalNetworksResponse model can be instantiated correctly."""
-    print("🔍 Testing GlobalNetworksResponse model instantiation...")
+    print('🔍 Testing GlobalNetworksResponse model instantiation...')
 
     try:
         # Import the fixed model
@@ -46,39 +47,39 @@ async def test_global_networks_response_model() -> bool | None:
         response = GlobalNetworksResponse()
         assert response.total_count == 0
         assert response.global_networks == []
-        print("✅ Empty instantiation works")
+        print('✅ Empty instantiation works')
 
         # Test 2: With data - total_count should auto-calculate from global_networks length
         response_with_data = GlobalNetworksResponse(
             global_networks=[],  # Empty list = total_count should be 0
-            regions_searched=["us-west-2", "us-east-1"],
+            regions_searched=['us-west-2', 'us-east-1'],
         )
         # The model_validator will set total_count based on global_networks length
         assert response_with_data.total_count == 0  # 0 because global_networks is empty
-        print("✅ Instantiation with data works")
+        print('✅ Instantiation with data works')
 
         # Test 3: Auto-calculation of total_count
         network_info = GlobalNetworkInfo(
-            global_network_id="gn-123456789abcdef01",
-            global_network_arn="arn:aws:networkmanager::123456789012:global-network/gn-123456789abcdef01",
-            description="Test network",
-            state="AVAILABLE",
+            global_network_id='gn-123456789abcdef01',
+            global_network_arn='arn:aws:networkmanager::123456789012:global-network/gn-123456789abcdef01',
+            description='Test network',
+            state='AVAILABLE',
         )
         response_auto = GlobalNetworksResponse(global_networks=[network_info])
         # The __init__ method should auto-set total_count to 1
         assert response_auto.total_count == 1
-        print("✅ Auto-calculation of total_count works")
+        print('✅ Auto-calculation of total_count works')
 
         return True
 
     except Exception as e:
-        print(f"❌ Model instantiation failed: {e}")
+        print(f'❌ Model instantiation failed: {e}')
         return False
 
 
 async def test_tool_parameter_handling() -> bool | None:
     """Test that the tool can handle empty parameters properly."""
-    print("\\n🔍 Testing tool parameter handling...")
+    print('\\n🔍 Testing tool parameter handling...')
 
     try:
         from awslabs.cloudwan_mcp_server.aws.client_manager import AWSClientManager
@@ -96,32 +97,32 @@ async def test_tool_parameter_handling() -> bool | None:
         normalized = tool._normalize_arguments(None)
         assert isinstance(normalized, dict)
         assert len(normalized) == 0
-        print("✅ None arguments normalization works")
+        print('✅ None arguments normalization works')
 
         # Test 2: Empty dict normalization
         normalized = tool._normalize_arguments({})
         assert isinstance(normalized, dict)
-        print("✅ Empty dict normalization works")
+        print('✅ Empty dict normalization works')
 
         # Test 3: Nested arguments normalization
-        nested = {"arguments": {"regions": ["us-west-2"]}}
+        nested = {'arguments': {'regions': ['us-west-2']}}
         normalized = tool._normalize_arguments(nested)
-        assert "regions" in normalized
-        assert normalized["regions"] == ["us-west-2"]
-        print("✅ Nested arguments normalization works")
+        assert 'regions' in normalized
+        assert normalized['regions'] == ['us-west-2']
+        print('✅ Nested arguments normalization works')
 
         # Test 4: Input schema validation
         schema = tool.input_schema
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "required" in schema
-        assert schema["required"] == []  # No required parameters
-        print("✅ Input schema validation works")
+        assert 'type' in schema
+        assert schema['type'] == 'object'
+        assert 'required' in schema
+        assert schema['required'] == []  # No required parameters
+        print('✅ Input schema validation works')
 
         return True
 
     except Exception as e:
-        print(f"❌ Tool parameter handling failed: {e}")
+        print(f'❌ Tool parameter handling failed: {e}')
         import traceback
 
         traceback.print_exc()
@@ -130,7 +131,7 @@ async def test_tool_parameter_handling() -> bool | None:
 
 async def test_import_conflicts() -> bool | None:
     """Test that there are no import conflicts between duplicate models."""
-    print("\\n🔍 Testing import conflicts resolution...")
+    print('\\n🔍 Testing import conflicts resolution...')
 
     try:
         # Test that we can import from both locations without conflicts
@@ -140,18 +141,18 @@ async def test_import_conflicts() -> bool | None:
         )
 
         # They should be the same class now (no duplicates)
-        print(f"Models import: {ModelsResponse}")
-        print(f"Network import: {NetworkResponse}")
+        print(f'Models import: {ModelsResponse}')
+        print(f'Network import: {NetworkResponse}')
 
         # Test instantiation from both imports
         ModelsResponse()
         NetworkResponse()
 
-        print("✅ Import conflicts resolved")
+        print('✅ Import conflicts resolved')
         return True
 
     except Exception as e:
-        print(f"❌ Import conflict test failed: {e}")
+        print(f'❌ Import conflict test failed: {e}')
         import traceback
 
         traceback.print_exc()
@@ -160,7 +161,7 @@ async def test_import_conflicts() -> bool | None:
 
 async def main() -> int:
     """Run all tests to validate the fixes."""
-    print("🚀 Running CloudWAN MCP Server Fix Validation Tests\\n")
+    print('🚀 Running CloudWAN MCP Server Fix Validation Tests\\n')
 
     test_results = []
 
@@ -173,29 +174,29 @@ async def main() -> int:
     passed_tests = sum(test_results)
     total_tests = len(test_results)
 
-    print(f"\\n📊 Test Results: {passed_tests}/{total_tests} tests passed")
+    print(f'\\n📊 Test Results: {passed_tests}/{total_tests} tests passed')
 
     if passed_tests == total_tests:
-        print("🎉 All fixes validated successfully!")
-        print("✅ GlobalNetworksResponse() instantiation works")
-        print("✅ Parameter validation and handling works")
-        print("✅ Import conflicts resolved")
-        print("✅ MCP protocol compliance achieved")
+        print('🎉 All fixes validated successfully!')
+        print('✅ GlobalNetworksResponse() instantiation works')
+        print('✅ Parameter validation and handling works')
+        print('✅ Import conflicts resolved')
+        print('✅ MCP protocol compliance achieved')
         return 0
     else:
-        print("❌ Some tests failed. Please review the fixes.")
+        print('❌ Some tests failed. Please review the fixes.')
         return 1
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     try:
         exit_code = asyncio.run(main())
         sys.exit(exit_code)
     except KeyboardInterrupt:
-        print("\\n🛑 Tests interrupted by user")
+        print('\\n🛑 Tests interrupted by user')
         sys.exit(1)
     except Exception as e:
-        print(f"\\n💥 Unexpected error: {e}")
+        print(f'\\n💥 Unexpected error: {e}')
         import traceback
 
         traceback.print_exc()

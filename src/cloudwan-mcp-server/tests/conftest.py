@@ -15,21 +15,19 @@
 
 # pytest fixtures for AWS client mocking
 import os
-from unittest.mock import Mock, patch
-
 import pytest
-from botocore.exceptions import ClientError
-
 from .mocking.aws import (
     AWSErrorCatalog,
     AWSServiceMocker,
     create_service_mocker,
 )
-from .security.credential_manager import credential_manager, get_secure_test_credentials
+from .security.credential_manager import create_credential_manager, get_secure_test_credentials
+from botocore.exceptions import ClientError
+from unittest.mock import Mock, patch
 
 
-@pytest.fixture(scope="function", name="mock_get_aws_client_fixture")
-def aws_client_mocker():
+@pytest.fixture(scope='function', name='mock_get_aws_client_fixture')
+def aws_client_mocker_fixture_impl():
     """Mock the get_aws_client function with hierarchical service mocking.
 
     This fixture provides intelligent AWS service client mocking with:
@@ -47,7 +45,7 @@ def aws_client_mocker():
 
     def _mock_client(service: str, region: str | None = None) -> Mock:
         """Create or retrieve cached service client mock."""
-        region = region or os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+        region = region or os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
         key = (service, region)
 
         if key not in clients:
@@ -57,7 +55,9 @@ def aws_client_mocker():
 
         return clients[key]
 
-    with patch("awslabs.cloudwan_mcp_server.server.get_aws_client", side_effect=_mock_client) as mock:
+    with patch(
+        'awslabs.cloudwan_mcp_server.server.get_aws_client', side_effect=_mock_client
+    ) as mock:
         yield mock
 
     # Clear LRU cache after tests to prevent state leakage
@@ -70,7 +70,7 @@ def aws_client_mocker():
         pass
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope='function')
 def aws_error_catalog() -> AWSErrorCatalog:
     """Centralized AWS error catalog for comprehensive error scenario testing.
 
@@ -87,7 +87,7 @@ def aws_error_catalog() -> AWSErrorCatalog:
     return AWSErrorCatalog
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope='function')
 def mock_boto_error() -> ClientError:
     """Mock boto3 ClientError for comprehensive error handling tests.
 
@@ -100,14 +100,17 @@ def mock_boto_error() -> ClientError:
             # Test error handling logic
     """
     error_response = {
-        "Error": {"Code": "ResourceNotFoundException", "Message": "Test error message for resource not found"},
-        "ResponseMetadata": {"RequestId": "test-request-id-123", "HTTPStatusCode": 404},
+        'Error': {
+            'Code': 'ResourceNotFoundException',
+            'Message': 'Test error message for resource not found',
+        },
+        'ResponseMetadata': {'RequestId': 'test-request-id-123', 'HTTPStatusCode': 404},
     }
 
-    return ClientError(error_response, "TestOperation")
+    return ClientError(error_response, 'TestOperation')
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope='function')
 def aws_service_mocker():
     """Factory fixture for creating AWS service mockers on demand.
 
@@ -122,7 +125,7 @@ def aws_service_mocker():
     return create_service_mocker
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope='function')
 def regional_aws_client():
     """Regional AWS client mock with environment-aware region selection.
 
@@ -138,18 +141,18 @@ def regional_aws_client():
 
     def _get_regional_client(request):
         # Check for region marker
-        region_marker = request.node.get_closest_marker("aws_region")
+        region_marker = request.node.get_closest_marker('aws_region')
         if region_marker:
             region = region_marker.args[0]
         else:
-            region = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+            region = os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
 
-        return create_service_mocker("networkmanager", region)
+        return create_service_mocker('networkmanager', region)
 
     return _get_regional_client
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope='function', autouse=True)
 def secure_aws_credentials(request):
     """Automatic secure credential setup for all tests.
 
@@ -160,7 +163,7 @@ def secure_aws_credentials(request):
     - SOC 2 audit trail logging
     """
     test_name = request.node.name
-    credentials = get_secure_test_credentials(test_context=f"pytest-{test_name}")
+    credentials = get_secure_test_credentials(test_context=f'pytest-{test_name}')
 
     # Set secure environment variables
     original_env = {}
@@ -182,35 +185,36 @@ def secure_aws_credentials(request):
     credentials.cleanup()
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope='session', autouse=True)
 def credential_cleanup_manager():
     """Session-level credential cleanup for security compliance."""
     yield
 
     # Emergency cleanup on test session end
-    credential_manager.emergency_cleanup()
+    manager = create_credential_manager()
+    manager.emergency_cleanup()
 
     # Log audit trail for compliance
-    audit_trail = credential_manager.get_audit_trail()
+    audit_trail = manager.get_audit_trail()
     if audit_trail:
-        print(f"\n[SECURITY] Processed {len(audit_trail)} credential lifecycle events")
+        print(f'\n[SECURITY] Processed {len(audit_trail)} credential lifecycle events')
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def mock_aws_context():
     """Provide AWS context for integration tests."""
-    with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
+    with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
         yield
 
 
 # Legacy fixture for backward compatibility
-@pytest.fixture(scope="function", name="mock_get_aws_client")
+@pytest.fixture(scope='function', name='mock_get_aws_client')
 def aws_client_mocker():
     """Mock AWS client with hierarchical service mocking."""
     clients = {}
 
     def _mock_client(service: str, region: str | None = None) -> Mock:
-        region = region or os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+        region = region or os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
         key = (service, region)
 
         if key not in clients:
@@ -219,7 +223,9 @@ def aws_client_mocker():
 
         return clients[key]
 
-    with patch("awslabs.cloudwan_mcp_server.server.get_aws_client", side_effect=_mock_client) as mock:
+    with patch(
+        'awslabs.cloudwan_mcp_server.server.get_aws_client', side_effect=_mock_client
+    ) as mock:
         yield mock
 
     # Clear LRU cache after tests

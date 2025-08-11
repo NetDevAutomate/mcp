@@ -15,24 +15,22 @@
 """Main entry point tests following AWS Labs patterns."""
 
 import os
+import pytest
 import subprocess
 import sys
-from unittest.mock import Mock, patch
-
-import pytest
-
 from awslabs.cloudwan_mcp_server.__main__ import main as module_main
 from awslabs.cloudwan_mcp_server.server import main
+from unittest.mock import Mock, patch
 
 
 class TestMainEntryPoint:
     """Test main entry point following AWS Labs patterns."""
 
     @pytest.mark.integration
-    @patch("awslabs.cloudwan_mcp_server.server.mcp.run")
+    @patch('awslabs.cloudwan_mcp_server.server.mcp.run')
     def test_main_function_success(self, mock_mcp_run) -> None:
         """Test main function executes successfully with valid environment."""
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
             try:
                 main()
                 # If main() completes without exception, it's successful
@@ -41,25 +39,27 @@ class TestMainEntryPoint:
                 # SystemExit is acceptable for main function
                 pass
             except Exception as e:
-                pytest.fail(f"main() raised unexpected exception: {e}")
+                pytest.fail(f'main() raised unexpected exception: {e}')
 
     @pytest.mark.integration
-    @patch("awslabs.cloudwan_mcp_server.server.mcp.run")
+    @patch('awslabs.cloudwan_mcp_server.server.mcp.run')
     def test_main_function_with_aws_profile(self, mock_mcp_run) -> None:
         """Test main function with AWS profile configuration."""
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-west-2", "AWS_PROFILE": "test-profile"}):
+        with patch.dict(
+            'os.environ', {'AWS_DEFAULT_REGION': 'us-west-2', 'AWS_PROFILE': 'test-profile'}
+        ):
             try:
                 main()
             except SystemExit:
                 pass  # Expected for main function
             except Exception as e:
-                pytest.fail(f"main() with AWS profile failed: {e}")
+                pytest.fail(f'main() with AWS profile failed: {e}')
 
     @pytest.mark.integration
-    @patch("awslabs.cloudwan_mcp_server.server.mcp.run")
+    @patch('awslabs.cloudwan_mcp_server.server.mcp.run')
     def test_main_function_mcp_run_called(self, mock_mcp_run) -> None:
         """Test that main function calls mcp.run() properly."""
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
             try:
                 main()
                 # Verify mcp.run was called if main completed normally
@@ -73,24 +73,24 @@ class TestMainEntryPoint:
     def test_main_function_environment_handling(self) -> None:
         """Test main function handles environment variables correctly."""
         # Test with minimal required environment
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
-            with patch("awslabs.cloudwan_mcp_server.server.mcp.run"):
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
+            with patch('awslabs.cloudwan_mcp_server.server.mcp.run'):
                 try:
                     main()
                 except SystemExit:
                     pass  # Expected behavior
                 except Exception as e:
                     # Should not raise other exceptions with valid environment
-                    pytest.fail(f"Unexpected exception with valid environment: {e}")
+                    pytest.fail(f'Unexpected exception with valid environment: {e}')
 
     @pytest.mark.integration
     def test_main_function_signal_handling(self) -> None:
         """Test main function handles signals appropriately."""
         # This test verifies main() can be interrupted gracefully
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
-            with patch("awslabs.cloudwan_mcp_server.server.mcp.run") as mock_run:
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
+            with patch('awslabs.cloudwan_mcp_server.server.mcp.run') as mock_run:
                 # Simulate KeyboardInterrupt during run
-                mock_run.side_effect = KeyboardInterrupt("Test interrupt")
+                mock_run.side_effect = KeyboardInterrupt('Test interrupt')
 
                 try:
                     main()
@@ -99,22 +99,22 @@ class TestMainEntryPoint:
                 except SystemExit:
                     pass  # Also acceptable
                 except Exception as e:
-                    pytest.fail(f"main() should handle KeyboardInterrupt gracefully: {e}")
+                    pytest.fail(f'main() should handle KeyboardInterrupt gracefully: {e}')
 
     @pytest.mark.integration
-    @patch("awslabs.cloudwan_mcp_server.server.mcp")
+    @patch('awslabs.cloudwan_mcp_server.server.mcp')
     def test_main_function_server_initialization(self, mock_mcp) -> None:
         """Test main function with server initialization."""
         mock_mcp.run = Mock()
 
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
             try:
                 main()
             except SystemExit:
                 pass
 
         # Verify server attributes are accessible
-        assert hasattr(mock_mcp, "run")
+        assert hasattr(mock_mcp, 'run')
 
     @pytest.mark.integration
     def test_main_function_import_errors(self) -> None:
@@ -128,8 +128,8 @@ class TestMainEntryPoint:
     @pytest.mark.integration
     def test_main_function_logging_configuration(self) -> None:
         """Test main function with logging configuration."""
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
-            with patch("awslabs.cloudwan_mcp_server.server.mcp.run"):
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
+            with patch('awslabs.cloudwan_mcp_server.server.mcp.run'):
                 try:
                     main()
                 except SystemExit:
@@ -143,8 +143,8 @@ class TestMainEntryPoint:
     @pytest.mark.integration
     def test_main_function_multiple_calls(self) -> None:
         """Test main function can be called multiple times safely."""
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
-            with patch("awslabs.cloudwan_mcp_server.server.mcp.run"):
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
+            with patch('awslabs.cloudwan_mcp_server.server.mcp.run'):
                 # First call
                 try:
                     main()
@@ -157,15 +157,15 @@ class TestMainEntryPoint:
                 except SystemExit:
                     pass
                 except Exception as e:
-                    pytest.fail(f"Multiple calls to main() should be safe: {e}")
+                    pytest.fail(f'Multiple calls to main() should be safe: {e}')
 
     @pytest.mark.integration
     def test_main_function_resource_cleanup(self) -> None:
         """Test main function cleans up resources properly."""
-        with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
-            with patch("awslabs.cloudwan_mcp_server.server.mcp.run") as mock_run:
+        with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
+            with patch('awslabs.cloudwan_mcp_server.server.mcp.run') as mock_run:
                 # Simulate exception during run to test cleanup
-                mock_run.side_effect = RuntimeError("Test error")
+                mock_run.side_effect = RuntimeError('Test error')
 
                 try:
                     main()
@@ -174,7 +174,7 @@ class TestMainEntryPoint:
                 except SystemExit:
                     pass  # Also acceptable
                 except Exception as e:
-                    pytest.fail(f"Unexpected exception during cleanup test: {e}")
+                    pytest.fail(f'Unexpected exception during cleanup test: {e}')
 
 
 class TestModuleMainEntryPoint:
@@ -198,7 +198,7 @@ class TestModuleMainEntryPoint:
         from awslabs.cloudwan_mcp_server.server import main as server_main
 
         # The module should have main function available
-        assert hasattr(__main__, "main")
+        assert hasattr(__main__, 'main')
         # Should be the same function (imported from server)
         assert __main__.main == server_main
 
@@ -212,7 +212,7 @@ class TestModuleMainEntryPoint:
         import awslabs.cloudwan_mcp_server.__main__ as main_module
 
         # Should have main function
-        assert hasattr(main_module, "main")
+        assert hasattr(main_module, 'main')
         assert callable(main_module.main)
 
         # Should be set up for execution
@@ -220,24 +220,23 @@ class TestModuleMainEntryPoint:
 
         source = inspect.getsource(main_module)
         assert 'if __name__ == "__main__"' in source
-        assert "main()" in source
+        assert 'main()' in source
 
     @pytest.mark.integration
     def test_module_name_check(self) -> None:
         """Test __name__ == "__main__" check works correctly."""
         # Read the __main__.py file to verify structure
-        import inspect
-
         import awslabs.cloudwan_mcp_server.__main__ as main_module
+        import inspect
 
         source = inspect.getsource(main_module)
 
         # Verify proper structure for module execution
         assert 'if __name__ == "__main__":' in source
-        assert "main()" in source
+        assert 'main()' in source
 
         # Verify main is imported from server
-        assert "from .server import main" in source
+        assert 'from .server import main' in source
 
 
 class TestCommandLineExecution:
@@ -248,17 +247,21 @@ class TestCommandLineExecution:
     def test_module_execution_help(self) -> None:
         """Test module execution shows help/version information."""
         # Test that the module can be executed (dry run)
-        cmd = [sys.executable, "-c", 'import awslabs.cloudwan_mcp_server.__main__; print("Module import successful")']
+        cmd = [
+            sys.executable,
+            '-c',
+            'import awslabs.cloudwan_mcp_server.__main__; print("Module import successful")',
+        ]
 
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
             # Should not fail to import
-            assert result.returncode == 0 or result.stderr == ""
-            assert "Module import successful" in result.stdout
+            assert result.returncode == 0 or result.stderr == ''
+            assert 'Module import successful' in result.stdout
         except subprocess.TimeoutExpired:
-            pytest.skip("Module execution test timed out")
+            pytest.skip('Module execution test timed out')
         except Exception as e:
-            pytest.skip(f"Module execution test skipped: {e}")
+            pytest.skip(f'Module execution test skipped: {e}')
 
     @pytest.mark.integration
     def test_entry_point_configuration(self) -> None:
@@ -282,8 +285,8 @@ class TestCommandLineExecution:
         import awslabs.cloudwan_mcp_server.server
 
         # Verify all modules loaded successfully
-        assert hasattr(awslabs.cloudwan_mcp_server, "__main__")
-        assert hasattr(awslabs.cloudwan_mcp_server, "server")
+        assert hasattr(awslabs.cloudwan_mcp_server, '__main__')
+        assert hasattr(awslabs.cloudwan_mcp_server, 'server')
 
         # Verify main function is accessible
         main_func = awslabs.cloudwan_mcp_server.__main__.main
@@ -293,16 +296,18 @@ class TestCommandLineExecution:
     @pytest.mark.integration
     def test_environment_variable_forwarding(self) -> None:
         """Test environment variables are properly forwarded to main execution."""
-        with patch("awslabs.cloudwan_mcp_server.server.mcp.run"):
-            with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "eu-west-1", "AWS_PROFILE": "test-profile"}):
+        with patch('awslabs.cloudwan_mcp_server.server.mcp.run'):
+            with patch.dict(
+                'os.environ', {'AWS_DEFAULT_REGION': 'eu-west-1', 'AWS_PROFILE': 'test-profile'}
+            ):
                 try:
                     module_main()
                 except SystemExit:
                     pass
 
                 # Environment should be accessible within main
-                assert os.environ.get("AWS_DEFAULT_REGION") == "eu-west-1"
-                assert os.environ.get("AWS_PROFILE") == "test-profile"
+                assert os.environ.get('AWS_DEFAULT_REGION') == 'eu-west-1'
+                assert os.environ.get('AWS_PROFILE') == 'test-profile'
 
 
 class TestMainFunctionEdgeCases:
@@ -312,10 +317,10 @@ class TestMainFunctionEdgeCases:
     def test_main_with_empty_environment(self) -> None:
         """Test main function behavior with minimal environment."""
         # Clear all AWS-related environment variables
-        aws_vars = [k for k in os.environ if k.startswith("AWS_")]
+        aws_vars = [k for k in os.environ if k.startswith('AWS_')]
 
-        with patch.dict("os.environ", dict.fromkeys(aws_vars, ""), clear=False):
-            with patch("awslabs.cloudwan_mcp_server.server.mcp.run"):
+        with patch.dict('os.environ', dict.fromkeys(aws_vars, ''), clear=False):
+            with patch('awslabs.cloudwan_mcp_server.server.mcp.run'):
                 try:
                     main()
                 except SystemExit:
@@ -326,10 +331,10 @@ class TestMainFunctionEdgeCases:
     @pytest.mark.integration
     def test_main_exception_propagation(self) -> None:
         """Test main function exception propagation patterns."""
-        with patch("awslabs.cloudwan_mcp_server.server.mcp.run") as mock_run:
+        with patch('awslabs.cloudwan_mcp_server.server.mcp.run') as mock_run:
             # Test different exception types
             exceptions_to_test = [
-                KeyboardInterrupt("User interrupt"),
+                KeyboardInterrupt('User interrupt'),
                 SystemExit(0),
                 SystemExit(1),
             ]
@@ -337,19 +342,19 @@ class TestMainFunctionEdgeCases:
             for exception in exceptions_to_test:
                 mock_run.side_effect = exception
 
-                with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
+                with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
                     try:
                         main()
                     except type(exception):
                         pass  # Expected
                     except Exception as e:
-                        pytest.fail(f"Unexpected exception type for {type(exception)}: {e}")
+                        pytest.fail(f'Unexpected exception type for {type(exception)}: {e}')
 
     @pytest.mark.integration
     def test_main_function_return_value(self) -> None:
         """Test main function return value patterns."""
-        with patch("awslabs.cloudwan_mcp_server.server.mcp.run"):
-            with patch.dict("os.environ", {"AWS_DEFAULT_REGION": "us-east-1"}):
+        with patch('awslabs.cloudwan_mcp_server.server.mcp.run'):
+            with patch.dict('os.environ', {'AWS_DEFAULT_REGION': 'us-east-1'}):
                 try:
                     result = main()
                     # main() typically doesn't return a value (returns None)

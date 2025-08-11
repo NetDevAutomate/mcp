@@ -5,7 +5,7 @@
  **100% Test Success Rate**
 
 - **Final Result**: 172/172 tests passing (100% success rate)
-- **Starting Point**: 119/172 tests passing (69% success rate) 
+- **Starting Point**: 119/172 tests passing (69% success rate)
 - **Improvement**: +53 tests fixed through systematic multi-agent approach
 - **Execution Time**: 8.12 seconds for full test suite
 - **AWS Labs Compliance**: ✅ CERTIFIED READY
@@ -16,10 +16,10 @@
 graph TB
     subgraph "Test Suite Structure"
         TS[Test Suite: 172 Total Tests]
-        
+
         subgraph "Unit Tests (10 modules)"
             UT1[test_aws_config_manager.py - 12 tests]
-            UT2[test_aws_helpers.py - 18 tests]  
+            UT2[test_aws_helpers.py - 18 tests]
             UT3[test_core_tools.py - 15 tests]
             UT4[test_discovery_tools.py - 14 tests]
             UT5[test_network_tools.py - 22 tests]
@@ -29,16 +29,16 @@ graph TB
             UT9[test_validation_tools.py - 11 tests]
             UT10[test_comprehensive_models.py - 15 tests]
         end
-        
+
         subgraph "Integration Tests (5 modules)"
             IT1[test_mcp_server.py - 8 tests]
             IT2[test_mcp_protocol.py - 6 tests]
             IT3[test_aws_labs_compliance.py - 5 tests]
-            IT4[test_comprehensive_server.py - 4 tests]  
+            IT4[test_comprehensive_server.py - 4 tests]
             IT5[test_main_entry_point.py - 6 tests]
         end
     end
-    
+
     TS --> UT1
     TS --> UT2
     TS --> UT3
@@ -54,7 +54,7 @@ graph TB
     TS --> IT3
     TS --> IT4
     TS --> IT5
-    
+
     style TS fill:#e1f5fe
     style UT1 fill:#c8e6c9
     style UT2 fill:#c8e6c9
@@ -445,8 +445,8 @@ def mock_networkmanager_client():
     client = Mock()
     client.list_core_networks.return_value = {
         "CoreNetworks": [{
-            "CoreNetworkId": "core-network-1234567890abcdef0",
-            "GlobalNetworkId": "global-network-1234567890abcdef0", 
+"CoreNetworkId": "core-network-1234567890abcdef0", # pragma: allowlist secret
+            "GlobalNetworkId": "global-network-1234567890abcdef0", # pragma: allowlist secret
             "State": "AVAILABLE",
             "Description": "Test core network",
             "CreatedAt": "2023-01-01T00:00:00Z"
@@ -460,10 +460,10 @@ def mock_networkmanager_client():
 def handle_aws_error(error: Exception, operation: str) -> str:
     """Standardized AWS error handling with JSON formatting."""
     error_response = {"success": False, "error": f"{operation} failed: {str(error)}"}
-    
+
     if isinstance(error, ClientError):
         error_response["error_code"] = error.response.get('Error', {}).get('Code', 'Unknown')
-    
+
     return json.dumps(error_response, indent=2)
 ```
 
@@ -471,7 +471,7 @@ def handle_aws_error(error: Exception, operation: str) -> str:
 
 ### Test Execution Performance
 - **Total Tests**: 172
-- **Execution Time**: 8.12 seconds 
+- **Execution Time**: 8.12 seconds
 - **Average per Test**: 47ms
 - **Memory Usage**: <512MB peak
 - **CPU Utilization**: <80% during execution
@@ -481,21 +481,21 @@ def handle_aws_error(error: Exception, operation: str) -> str:
 graph LR
     subgraph "Code Coverage"
         CC[Overall: 94.2%]
-        
+
         subgraph "Module Coverage"
             MC1[Server Core: 98.5%]
-            MC2[AWS Helpers: 96.1%] 
+            MC2[AWS Helpers: 96.1%]
             MC3[Tools: 92.8%]
             MC4[Utils: 91.3%]
         end
-        
+
         subgraph "Test Coverage"
             TC1[Unit Tests: 100%]
             TC2[Integration: 100%]
             TC3[Edge Cases: 89.4%]
         end
     end
-    
+
     CC --> MC1
     CC --> MC2
     CC --> MC3
@@ -503,7 +503,7 @@ graph LR
     CC --> TC1
     CC --> TC2
     CC --> TC3
-    
+
     style CC fill:#4caf50
     style MC1 fill:#8bc34a
     style MC2 fill:#8bc34a
@@ -521,7 +521,7 @@ graph LR
 === FAILURES ===
 ❌ 53 tests failed
 ❌ Mock fixture mismatches: 25 tests
-❌ Assertion pattern errors: 18 tests  
+❌ Assertion pattern errors: 18 tests
 ❌ Import resolution issues: 12 tests
 ❌ Syntax and edge cases: 11 tests
 
@@ -532,7 +532,7 @@ Total: 119/172 tests passing (69.2% success rate)
 ```
 === TEST SESSION RESULTS ===
 ✅ 172 tests passed
-✅ 0 tests failed  
+✅ 0 tests failed
 ✅ 0 tests skipped
 ✅ 0 errors
 
@@ -548,7 +548,7 @@ Execution time: 8.12 seconds
 - ✅ **Input validation** for all user-facing tools
 - ✅ **Error sanitization** to prevent information leakage
 
-### Operational Compliance  
+### Operational Compliance
 - ✅ **Standardized logging** patterns across all modules
 - ✅ **Consistent error handling** with structured JSON responses
 - ✅ **Resource cleanup** in all test fixtures
@@ -590,7 +590,7 @@ tests/integration/test_main_entry_point.py::TestMainEntryPoint::test_daemon_mode
 **✅ AWS LABS CERTIFICATION READY**
 
 - **Test Success Rate**: 100% (172/172)
-- **Security Compliance**: ✅ VALIDATED  
+- **Security Compliance**: ✅ VALIDATED
 - **Performance Standards**: ✅ WITHIN LIMITS
 - **Code Quality**: ✅ EXCEEDS REQUIREMENTS
 - **Documentation**: ✅ COMPREHENSIVE
@@ -600,6 +600,6 @@ The AWS CloudWAN MCP Server has achieved full compliance with AWS Labs standards
 
 ---
 
-**AWS CloudWAN MCP Server Test Documentation**  
-*Generated: 2025-01-03*  
+**AWS CloudWAN MCP Server Test Documentation**
+*Generated: 2025-01-03*
 *Status: AWS Labs Certification Ready ✨*

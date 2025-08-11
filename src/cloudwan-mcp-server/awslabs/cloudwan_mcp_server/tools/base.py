@@ -14,11 +14,10 @@
 
 """Base classes for MCP tools following AWS Labs patterns."""
 
-from abc import ABC, abstractmethod
-from typing import Any
-
 from ..utils.logger import get_logger
 from ..utils.response_formatter import format_error_response, format_success_response
+from abc import ABC, abstractmethod
+from typing import Any
 
 
 class BaseMCPTool(ABC):
@@ -33,7 +32,7 @@ class BaseMCPTool(ABC):
         """
         self.name = name
         self.description = description
-        self.logger = get_logger(f"{__name__}.{name}")
+        self.logger = get_logger(f'{__name__}.{name}')
 
     @abstractmethod
     async def execute(self, **kwargs) -> dict[str, Any]:
@@ -60,7 +59,7 @@ class BaseMCPTool(ABC):
             # Basic validation - subclasses can override
             return isinstance(input_data, dict)
         except Exception as e:
-            self.logger.error(f"Input validation failed: {e}")
+            self.logger.error(f'Input validation failed: {e}')
             return False
 
     def format_response(
@@ -77,7 +76,7 @@ class BaseMCPTool(ABC):
             Formatted response dictionary
         """
         if error:
-            return format_error_response(error, error_code or "ToolError")
+            return format_error_response(error, error_code or 'ToolError')
         else:
             return format_success_response(data)
 
@@ -94,7 +93,7 @@ class BaseMCPTool(ABC):
             # Validate input
             if not self.validate_input(kwargs):
                 return self.format_response(
-                    error=f"Invalid input parameters for {self.name}", error_code="ValidationError"
+                    error=f'Invalid input parameters for {self.name}', error_code='ValidationError'
                 )
 
             # Execute tool
@@ -102,14 +101,16 @@ class BaseMCPTool(ABC):
             return result
 
         except Exception as e:
-            self.logger.error(f"Tool {self.name} execution failed: {e}")
-            return self.format_response(error=f"{self.name} execution failed: {str(e)}", error_code="ExecutionError")
+            self.logger.error(f'Tool {self.name} execution failed: {e}')
+            return self.format_response(
+                error=f'{self.name} execution failed: {str(e)}', error_code='ExecutionError'
+            )
 
 
 class AWSBaseTool(BaseMCPTool):
     """Base class for AWS-specific MCP tools."""
 
-    def __init__(self, name: str, description: str, service_name: str = "") -> None:
+    def __init__(self, name: str, description: str, service_name: str = '') -> None:
         """Initialize AWS-specific tool.
 
         Args:
@@ -130,7 +131,7 @@ class AWSBaseTool(BaseMCPTool):
             True if valid, False otherwise
         """
         # AWS region validation
-        region = input_data.get("region")
+        region = input_data.get('region')
         if region and not isinstance(region, str):
             return False
 
@@ -138,15 +139,24 @@ class AWSBaseTool(BaseMCPTool):
 
 
 class BaseTool:
+    """Base class for non-MCP helper tools used in tests.
+
+    Provides common validation and client handling for AWS clients.
+    """
+
     def __init__(self, client) -> None:
+        """Initialize the base tool with an AWS client."""
         # Validate client type
-        if not hasattr(client, "meta"):
-            raise ValueError("Invalid AWS client instance")
+        if not hasattr(client, 'meta'):
+            raise ValueError('Invalid AWS client instance')
         self.client = client
 
 
 class NetworkConnectivityTool(BaseTool):
+    """Helper tool for basic CloudWAN connectivity checks used in tests."""
+
     def __init__(self, client) -> None:
+        """Initialize with an AWS client and derive retry settings."""
         super().__init__(client)
-        self.service_name = "cloudwan"
-        self.max_retries = getattr(client.meta.config, "retries", {}).get("max_attempts", 3)
+        self.service_name = 'cloudwan'
+        self.max_retries = getattr(client.meta.config, 'retries', {}).get('max_attempts', 3)

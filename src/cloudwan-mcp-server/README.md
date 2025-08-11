@@ -4,12 +4,12 @@ An MCP server that provides comprehensive AWS CloudWAN network analysis and trou
 
 ## Overview
 
-The AWS CloudWAN MCP Server enables AI assistants to analyze, troubleshoot, and manage AWS CloudWAN networks through natural language interactions. With 17 specialized tools, it provides complete visibility into CloudWAN infrastructure, path tracing, network function group (NFG) analysis, and policy validation.
+The AWS CloudWAN MCP Server enables AI assistants to analyze, troubleshoot, and manage AWS CloudWAN networks through natural language interactions. With **17** specialized tools, it provides complete visibility into CloudWAN infrastructure, path tracing, network function group (NFG) analysis, and policy validation.
 
 ## Features
 
 - **🔍 Network Path Tracing** - Trace network paths between IP addresses with detailed hop analysis
-- **📊 Core Network Management** - List and analyze CloudWAN core networks and segments  
+- **📊 Core Network Management** - List and analyze CloudWAN core networks and segments
 - **🔧 Network Function Groups** - Comprehensive NFG analysis and troubleshooting
 - **🌐 Multi-Region Discovery** - Discover VPCs and network resources across AWS regions
 - **📝 Policy Validation** - Validate CloudWAN policies and configurations
@@ -69,7 +69,7 @@ Add to your MCP client configuration:
       "command": "uvx",
       "args": ["--from", "git+https://github.com/awslabs/mcp.git#subdirectory=src/cloudwan-mcp-server", "cloudwan-mcp-server"],
       "env": {
-        "AWS_PROFILE": "your-aws-profile", 
+        "AWS_PROFILE": "your-aws-profile",
         "AWS_DEFAULT_REGION": "us-west-2"
       }
     }
@@ -96,9 +96,56 @@ Add to your MCP client configuration:
 }
 ```
 
+## Prerequisites
+
+Before installing and running the AWS CloudWAN MCP Server, ensure you have the following:
+
+- **AWS Account** with permissions to use the required services (see IAM Permissions section below).
+- **AWS CLI or SDK Configuration** with valid credentials configured in `~/.aws/credentials` or via environment variables.
+- **Python 3.10 or higher** installed and available in your PATH.
+- **pip** or **uv** package manager installed for managing Python packages.
+- **Network Access** to AWS endpoints for the services used by the tools (or configure custom endpoints if using a proxy).
+- Recommended: Run within a **Python virtual environment** to isolate dependencies.
+
+You can verify your Python version by running:
+```bash
+python --version
+```
+It should output `3.10.x` or above.
+
+Ensure you have configured your AWS profile:
+```bash
+aws configure --profile your-profile
+```
+
+## Troubleshooting
+
+If you encounter issues, consider the following common problems and solutions:
+
+- **AWS credentials not found**:
+  Ensure that your AWS CLI is configured with valid credentials. Run `aws sts get-caller-identity` to verify access.
+
+- **Invalid AWS region**:
+  Make sure the `AWS_DEFAULT_REGION` environment variable or configuration specifies a supported AWS region. Check `aws ec2 describe-regions` for a list of available regions.
+
+- **Missing dependencies**:
+  Ensure all dependencies are installed by running `uv sync --all-groups` or `pip install -r requirements.txt` in your environment.
+
+- **AccessDenied or UnauthorizedOperation errors**:
+  Verify that your IAM user or role has the necessary permissions listed in the IAM Permissions section above.
+
+- **Port already in use**:
+  If running locally and encountering "address already in use" errors, ensure no other service is bound to the server's port, or change the port configuration.
+
+If problems persist, run in debug mode by setting:
+```bash
+export CLOUDWAN_MCP_DEBUG=true
+```
+and check the logs for detailed error messages.
+
 ## Available Tools
 
-The CloudWAN MCP Server provides 17 specialized tools:
+The CloudWAN MCP Server provides **17** specialized tools:
 
 ### Network Analysis Tools
 - **`trace_network_path`** - Trace network paths between IP addresses
@@ -142,7 +189,7 @@ The following AWS IAM permissions are required:
       "Action": [
         "networkmanager:*",
         "ec2:DescribeVpcs",
-        "ec2:DescribeSubnets", 
+        "ec2:DescribeSubnets",
         "ec2:DescribeNetworkInterfaces",
         "ec2:DescribeRegions",
         "ec2:DescribeTransitGateways",
@@ -194,7 +241,7 @@ The following AWS IAM permissions are required:
 The CloudWAN MCP Server includes comprehensive testing with **100% test coverage**:
 
 - **172 total tests** with **100% pass rate**
-- Unit tests with realistic mock fixtures  
+- Unit tests with realistic mock fixtures
 - Integration testing with AWS services
 - Security validation and error handling
 - AWS Labs compliance validation
@@ -233,7 +280,7 @@ uv run pyright .
 The server is built with a modular architecture:
 
 - **Thread-safe LRU caching** for optimal performance
-- **Comprehensive error handling** with detailed diagnostics  
+- **Comprehensive error handling** with detailed diagnostics
 - **Multi-region support** for global CloudWAN deployments
 - **Extensible tool framework** for easy enhancement
 - **Production-ready logging** and monitoring

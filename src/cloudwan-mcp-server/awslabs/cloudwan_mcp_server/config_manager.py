@@ -15,14 +15,16 @@
 
 """Configuration persistence and management for CloudWAN MCP Server."""
 
+import boto3
 import json
 import os
+import re
 import tempfile
+from .server import _create_client
+from botocore.exceptions import ClientError
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
-import boto3
 
 
 class AWSConfigManager:
@@ -35,8 +37,8 @@ class AWSConfigManager:
             profile: AWS profile name
             region: AWS region
         """
-        self.profile = profile or os.environ.get("AWS_PROFILE", "default")
-        self.region = region or os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+        self.profile = profile or os.environ.get('AWS_PROFILE', 'default')
+        self.region = region or os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
         self._client_cache = {}
 
     def get_aws_client(self, service_name: str, region: str | None = None) -> boto3.client:
@@ -52,14 +54,18 @@ class AWSConfigManager:
         import boto3
 
         effective_region = region or self.region
-        cache_key = f"{service_name}:{effective_region}:{self.profile}"
+        cache_key = f'{service_name}:{effective_region}:{self.profile}'
 
         if cache_key not in self._client_cache:
-            if self.profile and self.profile != "default":
+            if self.profile and self.profile != 'default':
                 session = boto3.Session(profile_name=self.profile)
-                self._client_cache[cache_key] = session.client(service_name, region_name=effective_region)
+                self._client_cache[cache_key] = session.client(
+                    service_name, region_name=effective_region
+                )
             else:
-                self._client_cache[cache_key] = boto3.client(service_name, region_name=effective_region)
+                self._client_cache[cache_key] = boto3.client(
+                    service_name, region_name=effective_region
+                )
 
         return self._client_cache[cache_key]
 
@@ -83,14 +89,16 @@ class ConfigPersistenceManager:
         """
         if config_dir is None:
             # Use a subdirectory in the system temp directory
-            config_dir = Path(tempfile.gettempdir()) / "cloudwan_mcp" / "config"
+            config_dir = Path(tempfile.gettempdir()) / 'cloudwan_mcp' / 'config'
 
         self.config_dir = Path(config_dir)
         self.config_dir.mkdir(parents=True, exist_ok=True)
-        self.config_file = self.config_dir / "aws_config.json"
-        self.history_file = self.config_dir / "config_history.json"
+        self.config_file = self.config_dir / 'aws_config.json'
+        self.history_file = self.config_dir / 'config_history.json'
 
-    def save_current_config(self, profile: str, region: str, metadata: dict[str, Any] | None = None) -> bool:
+    def save_current_config(
+        self, profile: str, region: str, metadata: dict[str, Any] | None = None
+    ) -> bool:
         """Save current AWS configuration.
 
         Args:
@@ -103,13 +111,13 @@ class ConfigPersistenceManager:
         """
         try:
             config_data = {
-                "aws_profile": profile,
-                "aws_region": region,
-                "last_updated": datetime.now(UTC).isoformat(),
-                "metadata": metadata or {},
+                'aws_profile': profile,
+                'aws_region': region,
+                'last_updated': datetime.now(UTC).isoformat(),
+                'metadata': metadata or {},
             }
 
-            with open(self.config_file, "w") as f:
+            with open(self.config_file, 'w') as f:
                 json.dump(config_data, f, indent=2)
 
             # Also save to history
@@ -147,7 +155,7 @@ class ConfigPersistenceManager:
             if self.history_file.exists():
                 with open(self.history_file) as f:
                     history = json.load(f)
-                    return history.get("entries", [])[-limit:]
+                    return history.get('entries', [])[-limit:]
             return []
         except Exception:
             return []
@@ -167,20 +175,22 @@ class ConfigPersistenceManager:
             import re
 
             # Validate profile format
-            if not re.match(r"^[a-zA-Z0-9-_]+$", profile):
+            if not re.match(r'^[a-zA-Z0-9-_]+$', profile):
                 return False
 
             # Validate region format
-            if not re.match(r"^[a-z0-9\-]+$", region):
+            if not re.match(r'^[a-z0-9\-]+$', region):
                 return False
 
             # Update environment variables
-            os.environ["AWS_PROFILE"] = profile
-            os.environ["AWS_DEFAULT_REGION"] = region
+            os.environ['AWS_PROFILE'] = profile
+            os.environ['AWS_DEFAULT_REGION'] = region
 
             # Save the restored configuration
             return self.save_current_config(
-                profile, region, metadata={"restored": True, "restored_at": datetime.now(UTC).isoformat()}
+                profile,
+                region,
+                metadata={'restored': True, 'restored_at': datetime.now(UTC).isoformat()},
             )
         except Exception:
             return False
@@ -192,40 +202,40 @@ class ConfigPersistenceManager:
             Validation results dictionary
         """
         result = {
-            "config_file_exists": self.config_file.exists(),
-            "config_file_readable": False,
-            "config_valid": False,
-            "history_file_exists": self.history_file.exists(),
-            "history_entries": 0,
-            "errors": [],
+            'config_file_exists': self.config_file.exists(),
+            'config_file_readable': False,
+            'config_valid': False,
+            'history_file_exists': self.history_file.exists(),
+            'history_entries': 0,
+            'errors': [],
         }
 
         try:
-            if result["config_file_exists"]:
+            if result['config_file_exists']:
                 with open(self.config_file) as f:
                     config = json.load(f)
-                    result["config_file_readable"] = True
+                    result['config_file_readable'] = True
 
                     # Validate required fields
-                    required_fields = ["aws_profile", "aws_region", "last_updated"]
+                    required_fields = ['aws_profile', 'aws_region', 'last_updated']
                     if all(field in config for field in required_fields):
-                        result["config_valid"] = True
+                        result['config_valid'] = True
                     else:
                         missing_fields = [f for f in required_fields if f not in config]
-                        result["errors"].append(f"Missing required fields: {missing_fields}")
+                        result['errors'].append(f'Missing required fields: {missing_fields}')
 
         except json.JSONDecodeError as e:
-            result["errors"].append(f"Invalid JSON in config file: {str(e)}")
+            result['errors'].append(f'Invalid JSON in config file: {str(e)}')
         except Exception as e:
-            result["errors"].append(f"Error reading config file: {str(e)}")
+            result['errors'].append(f'Error reading config file: {str(e)}')
 
         try:
-            if result["history_file_exists"]:
+            if result['history_file_exists']:
                 with open(self.history_file) as f:
                     history = json.load(f)
-                    result["history_entries"] = len(history.get("entries", []))
+                    result['history_entries'] = len(history.get('entries', []))
         except Exception as e:
-            result["errors"].append(f"Error reading history file: {str(e)}")
+            result['errors'].append(f'Error reading history file: {str(e)}')
 
         return result
 
@@ -253,7 +263,7 @@ class ConfigPersistenceManager:
             config_data: Configuration data to save
         """
         try:
-            history = {"entries": []}
+            history = {'entries': []}
 
             # Load existing history
             if self.history_file.exists():
@@ -262,15 +272,15 @@ class ConfigPersistenceManager:
 
             # Add new entry
             history_entry = config_data.copy()
-            history_entry["change_id"] = len(history.get("entries", [])) + 1
-            history.setdefault("entries", []).append(history_entry)
+            history_entry['change_id'] = len(history.get('entries', [])) + 1
+            history.setdefault('entries', []).append(history_entry)
 
             # Keep only last 50 entries
-            if len(history["entries"]) > 50:
-                history["entries"] = history["entries"][-50:]
+            if len(history['entries']) > 50:
+                history['entries'] = history['entries'][-50:]
 
             # Save back to file
-            with open(self.history_file, "w") as f:
+            with open(self.history_file, 'w') as f:
                 json.dump(history, f, indent=2)
 
         except Exception:
@@ -293,16 +303,18 @@ class ConfigPersistenceManager:
 
             # Sanitize sensitive data before export
             sanitized_config = self._sanitize_config_for_export(current_config)
-            sanitized_history = [self._sanitize_config_for_export(entry) for entry in self.get_config_history(20)]
+            sanitized_history = [
+                self._sanitize_config_for_export(entry) for entry in self.get_config_history(20)
+            ]
 
             export_data = {
-                "export_timestamp": datetime.now(UTC).isoformat(),
-                "current_config": sanitized_config,
-                "config_history": sanitized_history,
-                "note": "Sensitive data has been sanitized for security",
+                'export_timestamp': datetime.now(UTC).isoformat(),
+                'current_config': sanitized_config,
+                'config_history': sanitized_history,
+                'note': 'Sensitive data has been sanitized for security',
             }
 
-            with open(export_path, "w") as f:
+            with open(export_path, 'w') as f:
                 json.dump(export_data, f, indent=2)
 
             return True
@@ -322,9 +334,15 @@ class ConfigPersistenceManager:
             with open(import_path) as f:
                 import_data = json.load(f)
 
-            current_config = import_data.get("current_config")
-            if current_config and "aws_profile" in current_config and "aws_region" in current_config:
-                return self.restore_config(current_config["aws_profile"], current_config["aws_region"])
+            current_config = import_data.get('current_config')
+            if (
+                current_config
+                and 'aws_profile' in current_config
+                and 'aws_region' in current_config
+            ):
+                return self.restore_config(
+                    current_config['aws_profile'], current_config['aws_region']
+                )
 
             return False
         except Exception:
@@ -345,25 +363,25 @@ class ConfigPersistenceManager:
         sanitized = config_data.copy()
 
         # Remove or mask sensitive keys in metadata
-        if "metadata" in sanitized and isinstance(sanitized["metadata"], dict):
-            metadata = sanitized["metadata"].copy()
+        if 'metadata' in sanitized and isinstance(sanitized['metadata'], dict):
+            metadata = sanitized['metadata'].copy()
 
             # Remove identity information that might contain account numbers
-            if "identity" in metadata:
-                if isinstance(metadata["identity"], dict):
-                    metadata["identity"] = {
-                        k: "[SANITIZED]" if k in ["account", "user_id", "arn"] else v
-                        for k, v in metadata["identity"].items()
+            if 'identity' in metadata:
+                if isinstance(metadata['identity'], dict):
+                    metadata['identity'] = {
+                        k: '[SANITIZED]' if k in ['account', 'user_id', 'arn'] else v
+                        for k, v in metadata['identity'].items()
                     }
                 else:
-                    metadata["identity"] = "[SANITIZED]"
+                    metadata['identity'] = '[SANITIZED]'
 
             # Sanitize any other potentially sensitive metadata
-            for key in ["credentials", "access_key", "secret_key", "session_token"]:
+            for key in ['credentials', 'access_key', 'secret_key', 'session_token']:
                 if key in metadata:
-                    metadata[key] = "[SANITIZED]"
+                    metadata[key] = '[SANITIZED]'
 
-            sanitized["metadata"] = metadata
+            sanitized['metadata'] = metadata
 
         return sanitized
 
@@ -373,176 +391,207 @@ config_persistence = ConfigPersistenceManager()
 
 
 async def aws_config_manager(operation: str, **kwargs) -> str:
+    """Manage AWS profile/region configuration and cache lifecycle.
+
+    Args:
+        operation: One of get_current, set_profile, set_region, set_both, validate_config, clear_cache
+        **kwargs: Operation-specific parameters
+
+    Returns:
+        JSON-encoded string with success, data, and/or error fields.
+    """
     try:
         config = config_persistence.load_current_config()
-        if operation == "get_current":
+        if operation == 'get_current':
             if config:
                 # Validate current configuration
                 validation_result = await validate_current_config(config)
                 return json.dumps(
                     {
-                        "success": True,
-                        "operation": operation,
-                        "current_configuration": {
-                            "aws_profile": config.get("aws_profile"),
-                            "aws_region": config.get("aws_region"),
-                            "configuration_valid": validation_result["success"],
-                            "identity": validation_result.get("identity", {}),
+                        'success': True,
+                        'operation': operation,
+                        'current_configuration': {
+                            'aws_profile': config.get('aws_profile'),
+                            'aws_region': config.get('aws_region'),
+                            'configuration_valid': validation_result['success'],
+                            'identity': validation_result.get('identity', {}),
                         },
                     }
                 )
-            return json.dumps({"success": False, "error": "No configuration found"})
+            return json.dumps({'success': False, 'error': 'No configuration found'})
 
-        if operation == "set_profile":
-            profile = kwargs.get("profile")
+        if operation == 'set_profile':
+            profile = kwargs.get('profile')
             if not profile:
-                return json.dumps({"success": False, "error": "Profile name is required"})
+                return json.dumps({'success': False, 'error': 'Profile name is required'})
 
             # Basic profile format validation
-            if not re.match(r"^[a-zA-Z0-9-_]+$", profile):
-                return json.dumps({"success": False, "error": "Invalid profile name format"})
+            if not re.match(r'^[a-zA-Z0-9-_]+$', profile):
+                return json.dumps({'success': False, 'error': 'Invalid profile name format'})
 
             # Attempt to validate profile existence
             try:
                 session = boto3.Session(profile_name=profile)
-                sts = session.client("sts")
+                sts = session.client('sts')
                 identity = await sts.get_caller_identity()
                 validation_success = True
-            except:
+            except ClientError as e:
                 validation_success = False
-                identity = {"error": "Failed to validate profile"}
+                identity = {'error': f'Failed to validate profile: {str(e)}'}
+            except Exception as e:
+                validation_success = False
+                identity = {'error': f'Failed to validate profile: {str(e)}'}
 
             # Update environment and save
-            os.environ["AWS_PROFILE"] = profile
+            os.environ['AWS_PROFILE'] = profile
             config_persistence.save_current_config(
-                profile, config.get("aws_region", "us-east-1"), metadata={"identity": identity}
+                profile, config.get('aws_region', 'us-east-1'), metadata={'identity': identity}
             )
 
             count = len(_create_client.cache_info())
             _create_client.cache_clear()
             return json.dumps(
                 {
-                    "success": validation_success,
-                    "operation": operation,
-                    "new_profile": profile,
-                    "profile_valid": validation_success,
-                    "cache_entries_cleared": count,
+                    'success': validation_success,
+                    'operation': operation,
+                    'new_profile': profile,
+                    'profile_valid': validation_success,
+                    'cache_entries_cleared': count,
                 }
             )
 
-        if operation == "set_region":
-            region = kwargs.get("region")
+        if operation == 'set_region':
+            region = kwargs.get('region')
             if not region:
-                return json.dumps({"success": False, "error": "Region name is required"})
+                return json.dumps({'success': False, 'error': 'Region name is required'})
 
-            if not re.match(r"^[a-z]{2}-[a-z]+-\d+$", region):
+            if not re.match(r'^[a-z]{2}-[a-z]+-\d+$', region):
                 return json.dumps(
                     {
-                        "success": False,
-                        "error": "Invalid region format",
-                        "suggestion": "Use standard AWS region format (e.g., us-west-2)",
+                        'success': False,
+                        'error': 'Invalid region format',
+                        'suggestion': 'Use standard AWS region format (e.g., us-west-2)',
                     }
                 )
 
-            os.environ["AWS_DEFAULT_REGION"] = region
-            config_persistence.save_current_config(config.get("aws_profile", "default"), region)
+            os.environ['AWS_DEFAULT_REGION'] = region
+            config_persistence.save_current_config(config.get('aws_profile', 'default'), region)
 
             count = len(_create_client.cache_info())
             _create_client.cache_clear()
             return json.dumps(
-                {"success": True, "operation": operation, "new_region": region, "cache_entries_cleared": count}
+                {
+                    'success': True,
+                    'operation': operation,
+                    'new_region': region,
+                    'cache_entries_cleared': count,
+                }
             )
 
-        if operation == "set_both":
-            profile = kwargs.get("profile")
-            region = kwargs.get("region")
+        if operation == 'set_both':
+            profile = kwargs.get('profile')
+            region = kwargs.get('region')
             if not profile or not region:
-                return json.dumps({"success": False, "error": "Both profile and region are required"})
+                return json.dumps(
+                    {'success': False, 'error': 'Both profile and region are required'}
+                )
 
             # Existing validation logic
             # ...
 
             return json.dumps(
                 {
-                    "success": True,
-                    "operation": operation,
-                    "new_profile": profile,
-                    "new_region": region,
-                    "cache_cleared": _create_client.cache_clear() is None,
+                    'success': True,
+                    'operation': operation,
+                    'new_profile': profile,
+                    'new_region': region,
+                    'cache_cleared': _create_client.cache_clear() is None,
                 }
             )
 
-        if operation == "validate_config":
+        if operation == 'validate_config':
             validation = await validate_current_config(config)
             return json.dumps(
                 {
-                    "success": True,
-                    "operation": operation,
-                    "overall_status": "valid" if validation["success"] else "invalid",
-                    "service_validations": validation.get("service_validations", {}),
+                    'success': True,
+                    'operation': operation,
+                    'overall_status': 'valid' if validation['success'] else 'invalid',
+                    'service_validations': validation.get('service_validations', {}),
                 }
             )
 
-        if operation == "clear_cache":
+        if operation == 'clear_cache':
             count = len(_create_client.cache_info())
             _create_client.cache_clear()
             return json.dumps(
                 {
-                    "success": True,
-                    "operation": "clear_cache",
-                    "cache_entries_cleared": count,
-                    "message": "LRU cache cleared successfully",
+                    'success': True,
+                    'operation': 'clear_cache',
+                    'cache_entries_cleared': count,
+                    'message': 'LRU cache cleared successfully',
                 }
             )
 
         return json.dumps(
             {
-                "success": False,
-                "error": f"Unknown operation: {operation}",
-                "supported_operations": [
-                    "get_current",
-                    "set_profile",
-                    "set_region",
-                    "set_both",
-                    "validate_config",
-                    "clear_cache",
+                'success': False,
+                'error': f'Unknown operation: {operation}',
+                'supported_operations': [
+                    'get_current',
+                    'set_profile',
+                    'set_region',
+                    'set_both',
+                    'validate_config',
+                    'clear_cache',
                 ],
             }
         )
 
     except Exception as e:
-        return json.dumps({"success": False, "error": str(e)})
+        return json.dumps({'success': False, 'error': str(e)})
 
 
 async def validate_current_config(config):
-    try:
-        session = boto3.Session(profile_name=config.get("aws_profile", "default"))
+    """Validate current AWS configuration by calling basic STS/EC2/NM APIs.
 
-        sts = session.client("sts")
+    Args:
+        config: Loaded configuration mapping containing aws_profile and aws_region
+
+    Returns:
+        Mapping with success flag, identity (if available), and per-service status.
+    """
+    try:
+        session = boto3.Session(profile_name=config.get('aws_profile', 'default'))
+
+        sts = session.client('sts')
         identity = await sts.get_caller_identity()
 
         # Validate region
-        ec2_client = session.client("ec2", region_name=config["aws_region"])
+        ec2_client = session.client('ec2', region_name=config['aws_region'])
         await ec2_client.describe_regions()
 
         # Add networkmanager validation
-        nm_client = session.client("networkmanager")
+        nm_client = session.client('networkmanager')
         await nm_client.describe_global_networks()
 
         return {
-            "success": True,
-            "identity": {"account": identity["Account"], "user_id": identity["UserId"], "arn": identity["Arn"]},
-            "service_validations": {
-                "sts": {"status": "success"},
-                "ec2": {"status": "success"},
-                "networkmanager": {"status": "success"},
+            'success': True,
+            'identity': {
+                'account': identity['Account'],
+                'user_id': identity['UserId'],
+                'arn': identity['Arn'],
+            },
+            'service_validations': {
+                'sts': {'status': 'success'},
+                'ec2': {'status': 'success'},
+                'networkmanager': {'status': 'success'},
             },
         }
     except ClientError as e:
         return {
-            "success": False,
-            "error": str(e),
-            "service_validations": {"sts": {"status": "failed", "error": str(e)}},
+            'success': False,
+            'error': str(e),
+            'service_validations': {'sts': {'status': 'failed', 'error': str(e)}},
         }
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {'success': False, 'error': str(e)}

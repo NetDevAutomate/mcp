@@ -21,4 +21,4 @@ enabling comprehensive and maintainable test fixtures.
 
 from .aws import AWSErrorCatalog, AWSServiceMocker, create_error_fixture, create_service_mocker
 
-__all__ = ["AWSServiceMocker", "AWSErrorCatalog", "create_service_mocker", "create_error_fixture"]
+__all__ = ['AWSServiceMocker', 'AWSErrorCatalog', 'create_service_mocker', 'create_error_fixture']

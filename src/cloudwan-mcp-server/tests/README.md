@@ -131,7 +131,7 @@ We use pytest markers to categorize and control test execution:
 
 ### Standard Markers
 - `@pytest.mark.unit` - Fast, isolated unit tests
-- `@pytest.mark.integration` - Integration tests with mocked dependencies  
+- `@pytest.mark.integration` - Integration tests with mocked dependencies
 - `@pytest.mark.live` - Tests requiring real AWS API calls
 - `@pytest.mark.slow` - Tests taking >10 seconds to execute
 - `@pytest.mark.asyncio` - Async/await test functions
@@ -218,10 +218,10 @@ class TestFunctionToTest:
         """Test successful execution path."""
         # Arrange
         input_data = {"key": "value"}
-        
+
         # Act
         result = function_to_test(input_data)
-        
+
         # Assert
         assert result["success"] is True
         assert "data" in result
@@ -245,10 +245,10 @@ def test_aws_service_integration(self, mock_get_client):
         'CoreNetworks': [{'CoreNetworkId': 'test-123'}]
     }
     mock_get_client.return_value = mock_client
-    
+
     # Test
     result = await list_core_networks()
-    
+
     # Verify
     assert result["success"] is True
     mock_client.list_core_networks.assert_called_once()
@@ -260,7 +260,7 @@ def test_aws_service_integration(self, mock_get_client):
 def test_aws_labs_error_format(self):
     """Test error responses follow AWS Labs format."""
     error_response = handle_error("Test error", "TEST_CODE")
-    
+
     # Verify AWS Labs standard error format
     assert error_response["success"] is False
     assert "error" in error_response
@@ -293,7 +293,7 @@ async def test_async_function():
 ```python
 @pytest.mark.parametrize("input_value,expected", [
     ("10.0.0.0/16", True),
-    ("192.168.1.0/24", True), 
+    ("192.168.1.0/24", True),
     ("invalid-cidr", False),
 ])
 def test_cidr_validation(input_value, expected):

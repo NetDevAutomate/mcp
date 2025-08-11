@@ -16,14 +16,12 @@
 """MCP protocol compliance tests."""
 
 import json
-from unittest.mock import Mock, patch
-
 import pytest
-
 from awslabs.cloudwan_mcp_server.server import (
     get_global_networks,
     list_core_networks,
 )
+from unittest.mock import Mock, patch
 
 
 class TestMCPProtocol:
@@ -33,30 +31,32 @@ class TestMCPProtocol:
     async def test_protocol_tool_execution(self) -> None:
         """Test MCP tool execution compliance."""
         # Mock AWS client for protocol testing
-        with patch("awslabs.cloudwan_mcp_server.server.get_aws_client") as mock_get_client:
+        with patch('awslabs.cloudwan_mcp_server.server.get_aws_client') as mock_get_client:
             mock_client = Mock()
             mock_client.list_core_networks.return_value = {
-                "CoreNetworks": [{"CoreNetworkId": "core-network-protocol-test", "State": "AVAILABLE"}]
+                'CoreNetworks': [
+                    {'CoreNetworkId': 'core-network-protocol-test', 'State': 'AVAILABLE'}
+                ]
             }
             mock_get_client.return_value = mock_client
 
             # Test core networks listing
             result = await list_core_networks()
             parsed = json.loads(result)
-            assert parsed["success"] is True
-            assert "core_networks" in parsed
-            assert len(parsed["core_networks"]) == 1
+            assert parsed['success'] is True
+            assert 'core_networks' in parsed
+            assert len(parsed['core_networks']) == 1
 
     @pytest.mark.asyncio
     async def test_tool_error_handling_compliance(self) -> None:
         """Test MCP error handling compliance."""
-        with patch("awslabs.cloudwan_mcp_server.server.get_aws_client") as mock_get_client:
-            mock_get_client.side_effect = Exception("Protocol test error")
+        with patch('awslabs.cloudwan_mcp_server.server.get_aws_client') as mock_get_client:
+            mock_get_client.side_effect = Exception('Protocol test error')
 
             result = await get_global_networks()
             parsed = json.loads(result)
 
             # Verify AWS Labs compliant error format
-            assert parsed["success"] is False
-            assert "error" in parsed
-            assert "error_code" in parsed  # This should now work with our fix
+            assert parsed['success'] is False
+            assert 'error' in parsed
+            assert 'error_code' in parsed  # This should now work with our fix

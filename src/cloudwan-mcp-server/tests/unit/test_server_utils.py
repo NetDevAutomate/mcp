@@ -10,7 +10,7 @@ class TestServerUtilities:
     @pytest.mark.unit
     def test_safe_json_dumps(self) -> None:
         """Test safe JSON serialization."""
-        test_data = {"key": "value"}
+        test_data = {'key': 'value'}
         result = safe_json_dumps(test_data)
         assert '"key": "value"' in result
 

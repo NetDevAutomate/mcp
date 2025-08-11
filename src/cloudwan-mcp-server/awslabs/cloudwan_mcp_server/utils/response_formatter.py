@@ -28,7 +28,7 @@ def format_error_response(error: str, error_code: str) -> dict[str, Any]:
     Returns:
         Standardized error response dictionary
     """
-    return {"success": False, "error": error, "error_code": error_code}
+    return {'success': False, 'error': error, 'error_code': error_code}
 
 
 def format_success_response(data: Any) -> dict[str, Any]:
@@ -40,7 +40,7 @@ def format_success_response(data: Any) -> dict[str, Any]:
     Returns:
         Standardized success response dictionary
     """
-    return {"success": True, "data": data}
+    return {'success': True, 'data': data}
 
 
 def safe_json_dumps(data: Any, **kwargs) -> str:

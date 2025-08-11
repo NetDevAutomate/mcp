@@ -15,7 +15,6 @@
 """Logger utilities following AWS Labs patterns."""
 
 import sys
-
 from loguru import logger as _logger
 
 
@@ -32,15 +31,15 @@ def get_logger(name: str):
     _logger.remove()  # Remove default handler
     _logger.add(
         sys.stderr,
-        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
-        level="INFO",
+        format='<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>',
+        level='INFO',
     )
 
     # Return logger with context
     return _logger.bind(name=name)
 
 
-def configure_logging(level: str = "INFO") -> None:
+def configure_logging(level: str = 'INFO') -> None:
     """Configure global logging level.
 
     Args:
@@ -49,6 +48,6 @@ def configure_logging(level: str = "INFO") -> None:
     _logger.remove()
     _logger.add(
         sys.stderr,
-        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+        format='<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>',
         level=level,
     )

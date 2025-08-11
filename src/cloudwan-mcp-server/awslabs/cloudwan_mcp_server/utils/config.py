@@ -30,7 +30,7 @@ def validate_configuration(config: dict[str, Any]) -> bool:
     if not isinstance(config, dict):
         return False
 
-    required_fields = ["aws_region"]
+    required_fields = ['aws_region']
 
     # Check required fields
     for field in required_fields:
@@ -38,14 +38,14 @@ def validate_configuration(config: dict[str, Any]) -> bool:
             return False
 
     # Validate aws_region format
-    aws_region = config.get("aws_region")
+    aws_region = config.get('aws_region')
     if not aws_region or not isinstance(aws_region, str):
         return False
 
     # Validate log_level if present
-    log_level = config.get("log_level")
+    log_level = config.get('log_level')
     if log_level:
-        valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
         if log_level not in valid_levels:
             return False
 
@@ -59,10 +59,10 @@ def get_aws_region() -> str | None:
         AWS region string or None if not found
     """
     return (
-        os.environ.get("AWS_REGION")
-        or os.environ.get("AWS_DEFAULT_REGION")
-        or os.environ.get("AWS_DEFAULT_REGION")
-        or "us-east-1"  # Default fallback
+        os.environ.get('AWS_REGION')
+        or os.environ.get('AWS_DEFAULT_REGION')
+        or os.environ.get('AWS_DEFAULT_REGION')
+        or 'us-east-1'  # Default fallback
     )
 
 
@@ -72,7 +72,7 @@ def get_aws_profile() -> str | None:
     Returns:
         AWS profile string or None if not found
     """
-    return os.environ.get("AWS_PROFILE")
+    return os.environ.get('AWS_PROFILE')
 
 
 def load_configuration() -> dict[str, Any]:
@@ -82,9 +82,9 @@ def load_configuration() -> dict[str, Any]:
         Configuration dictionary
     """
     return {
-        "aws_region": get_aws_region(),
-        "aws_profile": get_aws_profile(),
-        "log_level": os.environ.get("LOG_LEVEL", "INFO"),
+        'aws_region': get_aws_region(),
+        'aws_profile': get_aws_profile(),
+        'log_level': os.environ.get('LOG_LEVEL', 'INFO'),
     }
 
 

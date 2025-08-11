@@ -25,7 +25,7 @@ packages = ["awslabs"]
 markers = [
     "integration: mark tests as integration tests",
     "slow: mark tests as slow (performance-sensitive)",
-    "live: mark tests requiring live AWS credentials",
+    "live: require live AWS credentials",
     "unit: mark tests as unit tests",
     "asyncio: mark tests as async",
     "parametrize: parametrize tests with multiple inputs"
@@ -38,14 +38,42 @@ testpaths = [
 addopts = "--cov=awslabs --cov-report=term-missing --asyncio-mode=auto"
 
 [tool.ruff]
-line-length = 120
-target-version = "py312"
+line-length = 99
+extend-include = ["*.ipynb"]
+exclude = [
+    ".venv",
+    "**/__pycache__",
+    "**/node_modules",
+    "**/dist",
+    "**/build",
+    "**/env",
+    "**/.ruff_cache",
+    "**/.venv",
+    "**/.ipynb_checkpoints"
+]
+force-exclude = true
 
 [tool.ruff.lint]
-select = [
-    "E", "F", "I", "Q", "S",  # Standard error codes
-    "ANN", "DTZ", "UP"  # Annotations, timezones, pyupgrade
-]
+exclude = ["__init__.py"]
+select = ["C", "D", "E", "F", "I", "W"]
+ignore = ["C901", "E501", "E741", "F402", "F823", "D100", "D106"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+no-sections = true
+
+[tool.ruff.lint.per-file-ignores]
+"**/*.ipynb" = ["F704"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
 
 [tool.mypy]
 strict = true
@@ -55,6 +83,7 @@ plugins = ["pydantic.mypy"]
 dev = [
     "moto>=5.1.9",
     "networkx>=3.5",
+    "pre-commit>=4.3.0",
     "psutil>=7.0.0",
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",

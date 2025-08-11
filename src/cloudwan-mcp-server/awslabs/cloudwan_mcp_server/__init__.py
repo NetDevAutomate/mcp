@@ -1,3 +1,17 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 AWS CloudWAN MCP Server
 
@@ -12,14 +26,13 @@ Features:
 - AI/ML Anomaly Detection: Machine learning-based network anomaly detection
 - BGP Protocol Analysis: Comprehensive BGP state and security analysis
 - Dynamic Tool Loading: Fast startup with on-demand tool loading
-
-Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-SPDX-License-Identifier: MIT-0
 """
 
-__version__ = "0.0.0"
-__author__ = "AWS Labs"
-__description__ = "AWS CloudWAN MCP Server - Network operations, troubleshooting, and AI-powered analysis"
+__version__ = '0.0.0'
+__author__ = 'AWS Labs'
+__description__ = (
+    'AWS CloudWAN MCP Server - Network operations, troubleshooting, and AI-powered analysis'
+)
 
 # Core exports with graceful fallback for missing dependencies
 try:
@@ -40,13 +53,13 @@ except ImportError:
     _SERVER_AVAILABLE = False
 
 # Build __all__ list dynamically based on what's available
-__all__ = ["__version__", "__author__", "__description__"]
+__all__ = ['__version__', '__author__', '__description__']
 
 if _CONFIG_AVAILABLE and CloudWANConfig:
-    __all__.extend(["CloudWANConfig"])
+    __all__.extend(['CloudWANConfig'])
 
 if _SERVER_AVAILABLE:
     if CloudWANMCPServer:
-        __all__.append("CloudWANMCPServer")
+        __all__.append('CloudWANMCPServer')
     if run_server:
-        __all__.append("run_server")
+        __all__.append('run_server')
