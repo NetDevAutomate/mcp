@@ -3,7 +3,7 @@ import json
 from awslabs.cloudwan_mcp_server.server import (
     analyze_iac_firewall_policy,
     simulate_iac_firewall_traffic,
-    validate_iac_firewall_syntax
+    validate_iac_firewall_syntax,
 )
 
 

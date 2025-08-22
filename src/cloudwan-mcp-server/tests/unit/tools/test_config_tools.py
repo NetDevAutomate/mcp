@@ -3,9 +3,10 @@ import json
 from unittest.mock import patch, AsyncMock
 from awslabs.cloudwan_mcp_server.server import aws_config_manager
 
+
 @pytest.mark.asyncio
 class TestConfigTools:
-    @patch('boto3.client')
+    @patch("boto3.client")
     async def test_config_manager_valid_operations(self, mock_boto_client):
         mock_client = AsyncMock()
         mock_boto_client.return_value = mock_client

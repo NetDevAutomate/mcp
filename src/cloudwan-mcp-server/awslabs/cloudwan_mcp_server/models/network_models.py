@@ -17,7 +17,7 @@
 import ipaddress
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class NetworkPath(BaseModel):
@@ -30,7 +30,8 @@ class NetworkPath(BaseModel):
     status: str = Field(..., description="Path status (reachable, unreachable)")
     path_trace: List[Dict[str, Any]] = Field(default_factory=list, description="Hop details")
 
-    @validator("source_ip", "destination_ip")
+    @field_validator("source_ip", "destination_ip")
+    @classmethod
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         try:
@@ -50,7 +51,8 @@ class IPDetails(BaseModel):
     is_multicast: bool = Field(..., description="Whether IP is multicast")
     is_loopback: bool = Field(..., description="Whether IP is loopback")
 
-    @validator("ip_address")
+    @field_validator("ip_address")
+    @classmethod
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         try:
@@ -70,7 +72,8 @@ class CIDRValidation(BaseModel):
     num_addresses: int = Field(..., description="Number of addresses")
     is_private: bool = Field(..., description="Whether network is private")
 
-    @validator("network")
+    @field_validator("network")
+    @classmethod
     def validate_cidr(cls, v):
         """Validate CIDR format."""
         try:
@@ -153,7 +156,8 @@ class FlowLog(BaseModel):
     protocol: str = Field(..., description="Protocol")
     action: str = Field(..., description="Action taken (ALLOW, DENY)")
 
-    @validator("source_ip", "destination_ip")
+    @field_validator("source_ip", "destination_ip")
+    @classmethod
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         try:
@@ -174,7 +178,8 @@ class FiveTupleFlow(BaseModel):
     firewall_decision: str = Field(..., description="Firewall decision (ALLOW, DENY)")
     rule_matches: List[Dict[str, Any]] = Field(default_factory=list, description="Matching rules")
 
-    @validator("source_ip", "destination_ip")
+    @field_validator("source_ip", "destination_ip")
+    @classmethod
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         try:
