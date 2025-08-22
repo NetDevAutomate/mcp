@@ -30,6 +30,7 @@ MCP_SERVER_DESCRIPTION: Final[str] = "AWS CloudWAN MCP Server - Advanced network
 
 class ErrorCode(Enum):
     """Error codes for CloudWAN MCP Server."""
+
     AWS_ERROR = "AWS_ERROR"
     INVALID_INPUT = "INVALID_INPUT"
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
@@ -43,15 +44,15 @@ class ErrorCode(Enum):
 # Sanitization patterns for error messages
 SANITIZATION_PATTERNS = [
     # AWS access keys
-    (re.compile(r'AKIA[0-9A-Z]{16}'), '[ACCESS_KEY_REDACTED]'),
+    (re.compile(r"AKIA[0-9A-Z]{16}"), "[ACCESS_KEY_REDACTED]"),
     # AWS secret keys (40 char base64-like strings)
-    (re.compile(r'[A-Za-z0-9/+=]{40}'), '[SECRET_KEY_REDACTED]'),
+    (re.compile(r"[A-Za-z0-9/+=]{40}"), "[SECRET_KEY_REDACTED]"),
     # ARNs
-    (re.compile(r'arn:aws:[^:]+:[^:]*:[^:]*:[^:]+'), '[ARN_REDACTED]'),
+    (re.compile(r"arn:aws:[^:]+:[^:]*:[^:]*:[^:]+"), "[ARN_REDACTED]"),
 ]
 
 # Environment variable pattern
-ALLOWED_ENV_VAR_PATTERN = re.compile(r'^[A-Z_][A-Z0-9_]*$')
+ALLOWED_ENV_VAR_PATTERN = re.compile(r"^[A-Z_][A-Z0-9_]*$")
 
 
 def sanitize_error_message(message: str) -> str:
@@ -64,6 +65,7 @@ def sanitize_error_message(message: str) -> str:
         sanitized = pattern.sub(replacement, sanitized)
 
     return sanitized
+
 
 # Default Operation Mode
 DEFAULT_OPERATION_MODE: Final[str] = "simple"

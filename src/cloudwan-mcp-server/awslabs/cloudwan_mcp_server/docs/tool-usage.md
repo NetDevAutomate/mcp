@@ -5,7 +5,7 @@ This document provides comprehensive documentation for all 29+ networking tools 
 ## 🔍 Simple Discovery Tools
 
 ### Tool: SimpleDiscoverIpDetails
-**Category:** Simple Discovery  
+**Category:** Simple Discovery
 **Description:** Simple IP discovery with strict validation
 **Use Cases:**
 - Verify if an IP is IPv4/IPv6
@@ -150,7 +150,7 @@ This document provides comprehensive documentation for all 29+ networking tools 
 ---
 
 ### Tool: analyze_network_function_group
-**Category:** Network Function Groups  
+**Category:** Network Function Groups
 **Description:** Analyze Network Function Group details and policies
 
 **Parameters:**
@@ -252,7 +252,7 @@ This document provides comprehensive documentation for all 29+ networking tools 
 ---
 
 ### Tool: analyze_tgw_peers
-**Category:** Transit Gateway  
+**Category:** Transit Gateway
 **Description:** Transit Gateway peering analysis and troubleshooting
 
 **Parameters:**
@@ -415,19 +415,19 @@ This document provides comprehensive documentation for all 29+ networking tools 
 sequenceDiagram
     participant User
     participant MCP
-    
+
     User->>MCP: discover_vpcs(region="us-west-2")
     MCP-->>User: VPC inventory
-    
+
     User->>MCP: trace_network_path(source_ip="10.1.0.5", dest_ip="10.2.1.5")
     MCP-->>User: Path analysis
-    
+
     User->>MCP: analyze_tgw_routes(route_table_id="tgw-rtb-123")
     MCP-->>User: Route analysis
-    
+
     User->>MCP: validate_ip_cidr(operation="validate_cidr", cidr="10.0.0.0/16")
     MCP-->>User: CIDR validation
-    
+
     User->>MCP: get_system_resilience_metrics()
     MCP-->>User: System health
 ```
@@ -435,7 +435,7 @@ sequenceDiagram
 **Workflow Steps:**
 1. **Environment Discovery**: Start with `discover_vpcs` to map network topology
 2. **Path Analysis**: Use `trace_network_path` to understand connectivity
-3. **Route Validation**: Apply `analyze_tgw_routes` for route table analysis  
+3. **Route Validation**: Apply `analyze_tgw_routes` for route table analysis
 4. **CIDR Verification**: Run `validate_ip_cidr` to confirm addressing
 5. **Health Check**: Monitor with `get_system_resilience_metrics`
 

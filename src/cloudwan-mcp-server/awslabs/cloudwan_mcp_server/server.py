@@ -47,13 +47,13 @@ aws_config = AWSConfig()
 def get_aws_client(service_name: str, region: Optional[str] = None):
     """Get AWS client with proper configuration."""
     region = region or aws_config.default_region
-    
+
     config = Config(region_name=region, retries={"max_attempts": 3, "mode": "adaptive"})
-    
+
     if aws_config.aws_profile:
         session = boto3.Session(profile_name=aws_config.aws_profile)
         return session.client(service_name, config=config)
-    
+
     return boto3.client(service_name, config=config)
 
 
@@ -65,12 +65,12 @@ def safe_json_dumps(obj, **kwargs):
 def handle_aws_error(e: Exception, operation: str) -> str:
     """Handle AWS errors with proper sanitization."""
     error_msg = sanitize_error_message(str(e))
-    
+
     result = {
         "success": False,
         "error": {"code": ErrorCode.AWS_ERROR.value, "message": error_msg, "operation": operation},
     }
-    
+
     return safe_json_dumps(result, indent=2)
 
 
@@ -493,7 +493,16 @@ async def analyze_tgw_peers(peer_id: str, region: str | None = None) -> str:
 async def aws_config_manager(operation: str, profile: str | None = None, region: str | None = None) -> str:
     """Manage AWS configuration settings dynamically."""
     try:
-        valid_operations = ["get", "set", "list", "reset", "get_profile", "get_region", "list_profiles", "check_credentials"]
+        valid_operations = [
+            "get",
+            "set",
+            "list",
+            "reset",
+            "get_profile",
+            "get_region",
+            "list_profiles",
+            "check_credentials",
+        ]
         if operation not in valid_operations:
             result = {
                 "success": False,
@@ -503,7 +512,7 @@ async def aws_config_manager(operation: str, profile: str | None = None, region:
                 },
             }
             return safe_json_dumps(result, indent=2)
-        
+
         result = {
             "success": True,
             "operation": operation,

@@ -31,6 +31,19 @@ markers = [
     "live: Live AWS service tests"
 ]
 
+[tool.coverage.run]
+branch = true
+source = ["awslabs/cloudwan_mcp_server"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
+skip_covered = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"
+
 [dependency-groups]
 dev = [
     "fastmcp>=0.9.1",  # Critical FastMCP integration
@@ -38,6 +51,7 @@ dev = [
     "moto[ec2]>=4.0.10",
     "pytest>=7.4.0",
     "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
     "ruff>=0.1.5",
     "mypy>=1.1.1",
     "pydantic-settings>=2.1.0",
