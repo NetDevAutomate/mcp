@@ -267,6 +267,7 @@ async def list_network_function_groups(region: str | None = None) -> str:
     """List and discover Network Function Groups."""
     try:
         region = region or aws_config.default_region
+        # Simulated NFG response (as NFG APIs may vary)
         result = {
             "success": True,
             "region": region,

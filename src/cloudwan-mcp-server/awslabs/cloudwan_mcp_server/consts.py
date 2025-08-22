@@ -14,20 +14,56 @@
 
 """Constants for the CloudWAN MCP Server."""
 
+import re
+from enum import Enum
 from typing import Final
-
-# Default configuration values
-DEFAULT_WIDTH: Final[int] = 1024
-DEFAULT_HEIGHT: Final[int] = 1024
-DEFAULT_QUALITY: Final[str] = "standard"
-DEFAULT_CFG_SCALE: Final[float] = 6.5
-DEFAULT_NUMBER_OF_IMAGES: Final[int] = 1
 
 # Default AWS Region
 DEFAULT_AWS_REGION: Final[str] = "us-east-1"
 
 # Default Log Level
 DEFAULT_LOG_LEVEL: Final[str] = "WARNING"
+
+# MCP Server Description
+MCP_SERVER_DESCRIPTION: Final[str] = "AWS CloudWAN MCP Server - Advanced network analysis and troubleshooting tools"
+
+
+class ErrorCode(Enum):
+    """Error codes for CloudWAN MCP Server."""
+    AWS_ERROR = "AWS_ERROR"
+    INVALID_INPUT = "INVALID_INPUT"
+    RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
+    AWS_CLIENT_ERROR = "AWS_CLIENT_ERROR"
+    AWS_THROTTLING_ERROR = "AWS_THROTTLING_ERROR"
+    AWS_ACCESS_DENIED = "AWS_ACCESS_DENIED"
+    AWS_RESOURCE_NOT_FOUND = "AWS_RESOURCE_NOT_FOUND"
+    UNKNOWN_ERROR = "UNKNOWN_ERROR"
+
+
+# Sanitization patterns for error messages
+SANITIZATION_PATTERNS = [
+    # AWS access keys
+    (re.compile(r'AKIA[0-9A-Z]{16}'), '[ACCESS_KEY_REDACTED]'),
+    # AWS secret keys (40 char base64-like strings)
+    (re.compile(r'[A-Za-z0-9/+=]{40}'), '[SECRET_KEY_REDACTED]'),
+    # ARNs
+    (re.compile(r'arn:aws:[^:]+:[^:]*:[^:]*:[^:]+'), '[ARN_REDACTED]'),
+]
+
+# Environment variable pattern
+ALLOWED_ENV_VAR_PATTERN = re.compile(r'^[A-Z_][A-Z0-9_]*$')
+
+
+def sanitize_error_message(message: str) -> str:
+    """Sanitize error messages to remove sensitive information."""
+    if len(message) > 10000:
+        return "[TRUNCATED_FOR_SECURITY]"
+
+    sanitized = message
+    for pattern, replacement in SANITIZATION_PATTERNS:
+        sanitized = pattern.sub(replacement, sanitized)
+
+    return sanitized
 
 # Default Operation Mode
 DEFAULT_OPERATION_MODE: Final[str] = "simple"
