@@ -1,0 +1,31 @@
+# Act Configuration for AWS Labs Pipeline
+# Optimized for OrbStack and multi-platform support
+
+# Platform mappings - auto-detect architecture
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+-P ubuntu-20.04=catthehacker/ubuntu:act-20.04
+-P ubuntu-22.04=catthehacker/ubuntu:act-22.04
+
+# Container runtime optimizations
+--container-daemon-socket unix:///var/run/docker.sock
+--container-architecture linux/amd64
+
+# Artifact and volume management
+--artifact-server-path ./artifacts
+--bind
+
+# Environment and secrets (secure)
+--env-file config/.env
+--secret-file config/.secrets
+
+# Performance optimizations
+--rm
+--pull=false
+
+# Security settings
+--userns host
+--privileged=false
+
+# Platform detection for ARM64 Macs
+# If ARM64 detected, use ARM64 containers for better performance
+-P ubuntu-latest-arm=catthehacker/ubuntu:act-latest-arm64
