@@ -113,10 +113,19 @@ async def simple_list_core_networks(region: Optional[str] = Field(None, pattern=
         region = region or aws_config.default_region
         client = get_aws_client("networkmanager", region)
 
-        response = client.list_core_networks()
+        response = await client.list_core_networks()  # Added await
         core_networks = response.get("CoreNetworks", [])
 
-        result = {"success": True, "region": region, "total_count": len(core_networks), "core_networks": core_networks}
+        # Add GlobalNetworkId to results
+        result = {
+            "success": True,
+            "region": region,
+            "total_count": len(core_networks),
+            "core_networks": [
+                {"Id": cn["CoreNetworkId"], "GlobalNetworkId": cn.get("GlobalNetworkId")}
+                for cn in core_networks
+            ]
+        }
         return safe_json_dumps(result, indent=2)
     except Exception as e:
         return handle_aws_error(e, "SimpleListCoreNetworks")

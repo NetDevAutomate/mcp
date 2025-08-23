@@ -1,13 +1,13 @@
 """Pytest configuration and shared fixtures for CloudWAN MCP Server tests."""
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, AsyncMock
 
 
 @pytest.fixture
 def mock_aws_client():
     """Mock AWS client that returns success responses."""
-    mock_client = MagicMock()
+    mock_client = AsyncMock()
 
     # Mock common responses
     mock_client.list_core_networks.return_value = {"CoreNetworks": []}
@@ -31,3 +31,7 @@ def pytest_configure(config):
     """Configure pytest with custom markers and settings."""
     config.addinivalue_line("markers", "unit: Unit tests for individual components")
     config.addinivalue_line("markers", "integration: Integration tests that span multiple components")
+    config.addinivalue_line(
+        "markers",
+        "slow: Tests that may take longer due to network calls"
+    )

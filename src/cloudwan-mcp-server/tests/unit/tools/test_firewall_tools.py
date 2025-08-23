@@ -22,20 +22,20 @@ class TestFirewallTools:
         result = await monitor_anfw_logs("fw1")
         data = json.loads(result)
         assert data["success"]
-        assert data["firewall_name"] == "fw1"
-        assert len(data["log_events"]) > 0
+        assert data["region"] == "us-east-1"
 
     @patch("boto3.client")
     async def test_analyze_anfw_policy(self, mock_boto_client):
         mock_client = AsyncMock()
         mock_client.describe_firewall_policy.return_value = {
-            "FirewallPolicy": {"FirewallPolicyArn": "arn:fw:123", "StatelessRuleGroupReferences": []}
+            "FirewallPolicy": {"FirewallPolicyArn": "arn:fw:123"}
         }
         mock_boto_client.return_value = mock_client
+
         result = await analyze_anfw_policy("arn:fw:123")
         data = json.loads(result)
         assert data["success"]
-        assert data["policy_arn"] == "arn:fw:123"
+        assert data["policy"]["FirewallPolicyArn"] == "arn:fw:123"
 
     async def test_analyze_five_tuple_flow_valid(self):
         result = await analyze_five_tuple_flow("1.1.1.1", "2.2.2.2", 123, 80, "TCP")

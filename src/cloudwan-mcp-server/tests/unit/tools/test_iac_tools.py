@@ -22,8 +22,9 @@ class TestIaCTools:
         assert data["simulation"]["flows_tested"] == 3
 
     async def test_validate_iac_firewall_syntax(self):
-        result = await validate_iac_firewall_syntax("line1\nline2")
+        result = await validate_iac_firewall_syntax("line1\nline2", "terraform")
         data = json.loads(result)
         assert data["success"]
         assert data["validation"]["syntax_valid"]
         assert data["validation"]["line_count"] == 2
+        assert data["validation"]["format_valid"] is True

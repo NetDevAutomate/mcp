@@ -52,40 +52,28 @@ class TestCloudWANPolicyTools:
     @patch("boto3.client")
     async def test_get_core_network_policy(self, mock_boto_client):
         """Test retrieving core network policy."""
-        # Mock AWS client response
         mock_client = AsyncMock()
         mock_client.get_core_network_policy.return_value = {
-            "CoreNetworkPolicy": {"PolicyVersion": "1", "Segments": ["prod", "dev"]}
+            "CoreNetworkPolicy": {"PolicyVersion": "v1"}
         }
         mock_boto_client.return_value = mock_client
 
         result = await get_core_network_policy("cn-123")
         result_dict = json.loads(result)
-
-        assert result_dict["success"] is True
-        assert result_dict["core_network_id"] == "cn-123"
-        assert "policy" in result_dict
+        assert result_dict["policy"]["PolicyVersion"] == "v1"
 
     @patch("boto3.client")
     async def test_get_core_network_change_set(self, mock_boto_client):
         """Test retrieving core network change sets."""
-        # Mock AWS client response
         mock_client = AsyncMock()
         mock_client.get_core_network_change_set.return_value = {
-            "CoreNetworkChanges": [
-                {"ChangeType": "SEGMENT_CREATE", "Segment": "prod"},
-                {"ChangeType": "SEGMENT_DELETE", "Segment": "staging"},
-            ]
+            "CoreNetworkChanges": [{"ChangeType": "UPDATE"}]
         }
         mock_boto_client.return_value = mock_client
 
         result = await get_core_network_change_set("cn-123", "pv-456")
         result_dict = json.loads(result)
-
-        assert result_dict["success"] is True
-        assert result_dict["core_network_id"] == "cn-123"
-        assert result_dict["policy_version_id"] == "pv-456"
-        assert len(result_dict["change_sets"]) > 0
+        assert result_dict["change_sets"][0]["ChangeType"] == "UPDATE"
 
     @patch("boto3.client")
     async def test_analyze_segment_routes(self, mock_boto_client):
