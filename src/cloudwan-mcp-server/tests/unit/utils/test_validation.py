@@ -1,4 +1,3 @@
-import pytest
 from awslabs.cloudwan_mcp_server.consts import sanitize_error_message
 
 
@@ -9,34 +8,28 @@ def test_sanitize_error_message_truncates_long():
 
 
 def test_sanitize_access_key():
-    # Multiple ways to check access key redaction
-    msg = "My key is AKIA1234567890ABCDEF"  # pragma: allowlist secret
-    sanitized = sanitize_error_message(msg)
+    sanitized = sanitize_error_message("My key is AKIATESTOLD")  # pragma: allowlist secret
     assert any([
         "[ACCESS_KEY_REDACTED]" in sanitized,
         "AKIA" not in sanitized,
         "[REDACTED]" in sanitized
-    ]), "Should redact access keys"
+    ]), "Access key should be redacted"
 
 
 def test_sanitize_secret_key():
     secret = "A" * 40  # looks like a secret key  # pragma: allowlist secret
     sanitized = sanitize_error_message(secret)
-    assert any([
-        "[SECRET_KEY_REDACTED]" in sanitized,
-        len(sanitized) < len(secret),
-        sanitized == "[REDACTED]"
-    ]), "Should redact secret-like strings"
+    assert any(["[SECRET_KEY_REDACTED]" in sanitized, len(sanitized) < len(secret), sanitized == "[REDACTED]"]), (
+        "Should redact secret-like strings"
+    )
 
 
 def test_sanitize_arn():
     msg = "arn:aws:s3:::mybucket"  # pragma: allowlist secret
     sanitized = sanitize_error_message(msg)
-    assert any([
-        "[ARN_REDACTED]" in sanitized,
-        "arn:" not in sanitized,
-        "[REDACTED]" in sanitized
-    ]), "Should redact ARNs"
+    assert any(["[ARN_REDACTED]" in sanitized, "arn:" not in sanitized, "[REDACTED]" in sanitized]), (
+        "Should redact ARNs"
+    )
 
 
 def test_sanitize_normal_message():
@@ -54,14 +47,9 @@ def test_message_length_limits():
 
 def test_sensitive_pattern_redaction():
     # Test various sensitive patterns
-    sensitive_patterns = [
-        "password=secret123",
-        "secret_key=abcdef",
-        "token=xyz123"
-    ]
+    sensitive_patterns = ["password=secret123", "secret_key=abcdef", "token=xyz123"]
     for pattern in sensitive_patterns:
         sanitized = sanitize_error_message(pattern)
         assert "[REDACTED]" in sanitized or any(
-            sens_word not in sanitized for sens_word in
-            ["secret", "password", "token", "key"]
+            sens_word not in sanitized for sens_word in ["secret", "password", "token", "key"]
         ), f"Should redact sensitive pattern: {pattern}"

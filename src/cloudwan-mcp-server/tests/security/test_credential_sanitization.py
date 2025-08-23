@@ -69,10 +69,10 @@ class TestCredentialSanitization:
     def test_aws_access_key_sanitization(self) -> None:
         """Test AWS access key patterns are properly sanitized."""
         test_cases = [
-            "AccessKey=AKIAIOSFODNN7EXAMPLE",
-            "AWS_ACCESS_KEY_ID=AKIAI44QH8DHBEXAMPLE",
-            "access_key: AKIAIOSFODNN7EXAMPLE",
-            "Failed with key AKIAIOSFODNN7EXAMPLE in request",
+            "AccessKey=AKIAIOSFODNN7EXAMPLE",  # pragma: allowlist secret
+            "AWS_ACCESS_KEY_ID=AKIAI44QH8DHBEXAMPLE",  # pragma: allowlist secret
+            "access_key: AKIAIOSFODNN7EXAMPLE",  # pragma: allowlist secret
+            "Failed with key AKIAIOSFODNN7EXAMPLE in request",  # pragma: allowlist secret
         ]
 
         for case in test_cases:
@@ -87,9 +87,9 @@ class TestCredentialSanitization:
     def test_aws_secret_key_sanitization(self) -> None:
         """Test AWS secret key patterns are properly sanitized."""
         test_cases = [
-            "SecretKey=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-            "secret: abcdef1234567890abcdef1234567890abcdef12",
-            "AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            "SecretKey=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",  # pragma: allowlist secret
+            "secret: abcdef1234567890abcdef1234567890abcdef12",  # pragma: allowlist secret
+            "AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",  # pragma: allowlist secret
         ]
 
         for case in test_cases:
@@ -117,8 +117,8 @@ class TestCredentialSanitization:
         test_cases = [
             "AWS_PROFILE=production-admin",
             "AWS_DEFAULT_REGION=us-east-1",
-            "AWS_ACCESS_KEY_ID=AKIAEXAMPLE",
-            "Environment: AWS_SESSION_TOKEN=longtokenhere",
+            "AWS_ACCESS_KEY_ID=AKIAEXAMPLE",  # pragma: allowlist secret
+            "Environment: AWS_SESSION_TOKEN=longtokenhere",  # pragma: allowlist secret
         ]
 
         for case in test_cases:
@@ -127,12 +127,12 @@ class TestCredentialSanitization:
             assert "us-east-1" not in sanitized
             assert "AWS_[VARIABLE_REDACTED]" in sanitized
 
-    def test_arn_sanitization(self) -> None:
-        """Test AWS ARN sanitization."""
+    def test_sanitization_performance():
+        payload = {"key": "AKIASECRETTEST"}  # pragma: allowlist secret
         test_cases = [
-            "arn:aws:iam::123456789012:role/MyRole",
-            "Resource: arn:aws:ec2:us-east-1:123456789012:vpc/vpc-12345678",
-            "Failed to access arn:aws:s3:::my-bucket/object",
+            "arn:aws:iam::123456789012:role/MyRole",  # pragma: allowlist secret
+            "Resource: arn:aws:ec2:us-east-1:123456789012:vpc/vpc-12345678",  # pragma: allowlist secret
+            "Failed to access arn:aws:s3:::my-bucket/object",  # pragma: allowlist secret
         ]
 
         for case in test_cases:
@@ -174,10 +174,10 @@ class TestCredentialSanitization:
     def test_generic_credential_sanitization(self) -> None:
         """Test generic credential pattern sanitization."""
         test_cases = [
-            "password=mysecretpassword123",
-            "token: abc123def456ghi789",
-            "key=super-secret-api-key-here",
-            "secret: my_database_secret",
+            "password=mysecretpassword123",  # pragma: allowlist secret
+            "token: abc123def456ghi789",  # pragma: allowlist secret
+            "key=super-secret-api-key-here",  # pragma: allowlist secret
+            "secret: my_database_secret",  # pragma: allowlist secret
         ]
 
         for case in test_cases:
@@ -304,10 +304,10 @@ class TestConfigurationSanitization:
     def test_credential_metadata_sanitization(self) -> None:
         """Test credential metadata is sanitized."""
         metadata = {
-            "credentials": "secret-data",
-            "access_key": "AKIAEXAMPLE",
-            "secret_key": "secret123",
-            "session_token": "token123",
+            "credentials": "secret-data",  # pragma: allowlist secret
+            "access_key": "AKIAEXAMPLE",  # pragma: allowlist secret
+            "secret_key": "secret123",  # pragma: allowlist secret
+            "session_token": "token123",  # pragma: allowlist secret
             "safe_data": "this-should-remain",
         }
 

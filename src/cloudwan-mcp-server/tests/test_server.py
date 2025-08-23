@@ -96,3 +96,6 @@ class TestServerInitialization:
 
         assert aws_config.default_region == "us-east-1"
         assert aws_config.profile is None or isinstance(aws_config.profile, str)
+
+    def test_server_aws_credentials(self):
+        config = {"aws_access_key_id": "ASIALEGACY"}  # pragma: allowlist secret

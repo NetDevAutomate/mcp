@@ -9,9 +9,9 @@ def cache():
 
 
 @patch("boto3.client")
-def test_cache_hit(mock_boto, cache):
-    client1 = cache.get_client("ec2", "us-east-1")
-    client2 = cache.get_client("ec2", "us-east-1")
+async def test_cache_hit(mock_boto, cache):
+    client1 = await cache.get_client("ec2", "us-east-1")
+    client2 = await cache.get_client("ec2", "us-east-1")
     assert client1 is client2
 
 

@@ -460,6 +460,22 @@ class TestSecuritySanitizationInErrorPaths:
         assert sanitized == "[TRUNCATED_FOR_SECURITY]"
         assert len(sanitized) < 100
 
+    def test_aws_credential_leak(self):
+        """Test detection of AWS credential leaks in error messages."""
+        payload = {"AccessKey": "ASIAOLDTEST"}  # pragma: allowlist secret
+        sanitized = sanitize_error_message(json.dumps(payload))
+        assert "ASIAOLDTEST" not in sanitized
+        assert "AWS_ACCESS_KEY_REDACTED" in sanitized
+
+    def test_exception_chain_with_secrets(self):
+        """Test that exception chains with secrets are properly sanitized."""
+        inner_exception = ValueError("AKIAEXPIRED")  # pragma: allowlist secret
+        outer_exception = RuntimeError(f"Outer error: {inner_exception}")  # pragma: allowlist secret
+        sanitized = sanitize_error_message(str(outer_exception))
+        
+        assert "AKIAEXPIRED" not in sanitized
+        assert "AWS_ACCESS_KEY_REDACTED" in sanitized
+
 
 # Integration test to ensure all improvements work together
 class TestIntegratedErrorHandling:

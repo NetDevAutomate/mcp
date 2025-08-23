@@ -18,8 +18,7 @@ def test_aws_config_env_override(monkeypatch):
 
 
 def test_get_aws_client_with_profile(monkeypatch):
-    monkeypatch.setenv("CLOUDWAN_AWS_PROFILE", "myprofile")
+    monkeypatch.setenv("CLOUDWAN_AWS_PROFILE", "secure-profile")  # pragma: allowlist secret
     cfg = server.AWSConfig()
-    # ensure function returns a boto3 client without error
     client = server.get_aws_client("ec2", region="us-east-1")
     assert client is not None

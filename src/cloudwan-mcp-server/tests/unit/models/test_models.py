@@ -7,7 +7,7 @@ from awslabs.cloudwan_mcp_server.models.network_models import IPDetails
 def test_core_network_model_valid():
     data = {
         "core_network_id": "cn-123",
-        "core_network_arn": "arn:aws:networkmanager::123:core-network/cn-123",
+        "core_network_arn": "arn:aws:networkmanager::123:core-network/cn-123",  # pragma: allowlist secret
         "global_network_id": "gn-456",
         "state": "AVAILABLE",
         "created_at": "2024-01-01T12:00:00Z",

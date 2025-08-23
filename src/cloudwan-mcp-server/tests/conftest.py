@@ -19,7 +19,7 @@ def mock_aws_client():
     # Added security pragma for mock credentials
     mock_client.get_credentials.return_value = {
         "AccessKeyId": "TESTKEY123",
-        "SecretAccessKey": "SECRETTESTKEY"  # pragma: allowlist secret
+        "SecretAccessKey": "SECRETTESTKEY",  # pragma: allowlist secret
     }
 
     return mock_client

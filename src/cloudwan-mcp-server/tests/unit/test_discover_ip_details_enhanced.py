@@ -288,6 +288,11 @@ class TestEnhancedDiscoverIPDetails:
 
             sts = boto3.client("sts")
             sts.get_caller_identity()
+
+            mock_client.get_credentials.return_value = {
+                "AccessKeyId": "ASIATESTLEGACY",
+                "SecretAccessKey": "SECRETKEYTESTOLD",  # pragma: allowlist secret
+            }
         except Exception:
             pytest.skip("No valid AWS credentials for integration test")
 

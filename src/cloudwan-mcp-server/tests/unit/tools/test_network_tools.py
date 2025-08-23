@@ -8,10 +8,9 @@ async def test_list_network_function_groups():
     result = await list_network_function_groups()
     data = json.loads(result)
     assert data["success"] is True
-    
-    # Check for either 'groups' or 'network_function_groups'
-    groups = data.get("groups") or data.get("network_function_groups", [])
-    assert len(groups) >= 2, "Expected at least 2 network function groups"
+
+    groups = data.get("groups") or data.get("network_function_groups") or []
+    assert len(groups) >= 2, "Expected minimum 2 network function groups"
 
     # Verify each group has required attributes
     for group in groups:

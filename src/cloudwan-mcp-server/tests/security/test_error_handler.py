@@ -255,7 +255,7 @@ class TestPerformance:
         # Mock CloudWatch to avoid network latency
         with patch.object(handler.metrics, "put_metric", new_callable=AsyncMock):
             # pragma: allowlist secret
-            error = ValueError("Test error with sensitive aws_access_key_id=AKIAIOSFODNN7EXAMPLE")  # Non-production test pattern for security validation
+            error = ValueError("Test error with sensitive aws_access_key_id=AKIAIOSFODNN7EXAMPLE")  # pragma: allowlist secret
             context = MagicMock()
 
             # Measure latency
@@ -376,7 +376,7 @@ class TestCredentialSanitization:
         test_cases = [
             # Current implementation handles these
         # pragma: allowlist secret
-        ("aws_access_key_id=AKIAIOSFODNN7EXAMPLE", True),  # Test pattern for AWS access key validation
+        ("aws_access_key_id=AKIAIOSFODNN7EXAMPLE", True),  # pragma: allowlist secret
         # pragma: allowlist secret
         ("AWS_SECRET_ACCESS_KEY='wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'", True),  # Test pattern for secret validation
             # These should be handled but aren't (missing patterns)
