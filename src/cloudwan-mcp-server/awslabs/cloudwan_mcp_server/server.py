@@ -122,9 +122,8 @@ async def simple_list_core_networks(region: Optional[str] = Field(None, pattern=
             "region": region,
             "total_count": len(core_networks),
             "core_networks": [
-                {"Id": cn["CoreNetworkId"], "GlobalNetworkId": cn.get("GlobalNetworkId")}
-                for cn in core_networks
-            ]
+                {"Id": cn["CoreNetworkId"], "GlobalNetworkId": cn.get("GlobalNetworkId")} for cn in core_networks
+            ],
         }
         return safe_json_dumps(result, indent=2)
     except Exception as e:

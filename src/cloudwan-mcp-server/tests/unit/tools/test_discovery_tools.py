@@ -51,11 +51,7 @@ class TestDiscoveryTools:
     async def test_simple_list_core_networks(self, mock_boto_client):
         """Test listing core networks."""
         mock_client = AsyncMock()
-        mock_client.list_core_networks.return_value = {
-            "CoreNetworks": [
-                {"Id": "cn-123", "GlobalNetworkId": "gn-456"}
-            ]
-        }
+        mock_client.list_core_networks.return_value = {"CoreNetworks": [{"Id": "cn-123", "GlobalNetworkId": "gn-456"}]}
         mock_boto_client.return_value = mock_client
 
         # Test default region
@@ -68,11 +64,7 @@ class TestDiscoveryTools:
         assert result_dict["core_networks"][0]["Id"] == "cn-123"
 
         # Test explicit valid region
-        mock_client.list_core_networks.return_value = {
-            "CoreNetworks": [
-                {"Id": "cn-789", "GlobalNetworkId": "gn-abc"}
-            ]
-        }
+        mock_client.list_core_networks.return_value = {"CoreNetworks": [{"Id": "cn-789", "GlobalNetworkId": "gn-abc"}]}
         result = await simple_list_core_networks("us-west-2")
         result_dict = json.loads(result)
         assert result_dict["total_count"] == 1
@@ -102,13 +94,7 @@ class TestDiscoveryTools:
             ("::1", "2001:db8::1"),  # IPv6 addresses
         ],
     )
-    @pytest.mark.parametrize(
-        "valid_region",
-        [
-            "us-west-2",
-            "eu-central-1"
-        ]
-    )
+    @pytest.mark.parametrize("valid_region", ["us-west-2", "eu-central-1"])
     async def test_simple_list_core_networks_valid_regions(self, valid_region):
         """Test with valid AWS regions."""
         result = await simple_list_core_networks(valid_region)

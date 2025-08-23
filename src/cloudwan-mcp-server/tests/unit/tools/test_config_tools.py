@@ -11,6 +11,9 @@ class TestConfigTools:
         mock_client = AsyncMock()
         mock_boto_client.return_value = mock_client
 
+        # Added security pragma to allowlist credential patterns
+        mock_client.get_credentials.return_value = {"AccessKeyId": "ASIA123TEST", "SecretAccessKey": "SECRETKEYTEST"}  # pragma: allowlist secret
+
         for op in ["get", "set", "list", "reset", "get_profile", "get_region", "list_profiles", "check_credentials"]:
             result = await aws_config_manager(op, "default", "us-east-1")
             data = json.loads(result)

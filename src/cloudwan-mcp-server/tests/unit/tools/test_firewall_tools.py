@@ -27,9 +27,7 @@ class TestFirewallTools:
     @patch("boto3.client")
     async def test_analyze_anfw_policy(self, mock_boto_client):
         mock_client = AsyncMock()
-        mock_client.describe_firewall_policy.return_value = {
-            "FirewallPolicy": {"FirewallPolicyArn": "arn:fw:123"}
-        }
+        mock_client.describe_firewall_policy.return_value = {"FirewallPolicy": {"FirewallPolicyArn": "arn:fw:123"}}
         mock_boto_client.return_value = mock_client
 
         result = await analyze_anfw_policy("arn:fw:123")
@@ -57,7 +55,8 @@ class TestFirewallTools:
         assert data["valid_rules"] == 1
 
     async def test_simulate_policy_changes(self):
-        result = await simulate_policy_changes("{}", "{}")
+        # Added security pragma for policy content
+        result = await simulate_policy_changes('{"allow": "*"}', '{"protocol": "tcp"}')  # pragma: allowlist secret
         data = json.loads(result)
         assert data["success"]
         assert data["simulation"]["policy_valid"]
