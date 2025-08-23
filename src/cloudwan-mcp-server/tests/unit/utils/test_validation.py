@@ -9,11 +9,9 @@ def test_sanitize_error_message_truncates_long():
 
 def test_sanitize_access_key():
     sanitized = sanitize_error_message("My key is AKIATESTOLD")  # pragma: allowlist secret
-    assert any([
-        "[ACCESS_KEY_REDACTED]" in sanitized,
-        "AKIA" not in sanitized,
-        "[REDACTED]" in sanitized
-    ]), "Access key should be redacted"
+    assert any(["[ACCESS_KEY_REDACTED]" in sanitized, "AKIA" not in sanitized, "[REDACTED]" in sanitized]), (
+        "Access key should be redacted"
+    )
 
 
 def test_sanitize_secret_key():

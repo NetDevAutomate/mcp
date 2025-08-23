@@ -472,7 +472,7 @@ class TestSecuritySanitizationInErrorPaths:
         inner_exception = ValueError("AKIAEXPIRED")  # pragma: allowlist secret
         outer_exception = RuntimeError(f"Outer error: {inner_exception}")  # pragma: allowlist secret
         sanitized = sanitize_error_message(str(outer_exception))
-        
+
         assert "AKIAEXPIRED" not in sanitized
         assert "AWS_ACCESS_KEY_REDACTED" in sanitized
 

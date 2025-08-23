@@ -34,9 +34,9 @@ class TestCloudWANPolicyTools:
         # Flexible validation check
         validation_results = result_dict.get("validation_results", [])
         if validation_results:
-            assert all(
-                res.get("status") in ["VALID", "SUCCESS"] for res in validation_results
-            ), "All validations should pass"
+            assert all(res.get("status") in ["VALID", "SUCCESS"] for res in validation_results), (
+                "All validations should pass"
+            )
 
     @pytest.mark.parametrize(
         "invalid_policy",
