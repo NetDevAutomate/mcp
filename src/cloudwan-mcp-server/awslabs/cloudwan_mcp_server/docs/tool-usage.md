@@ -4,51 +4,7 @@ This document provides comprehensive documentation for all 29+ networking tools 
 
 ## 🔍 Simple Discovery Tools
 
-### Tool: SimpleDiscoverIpDetails
-**Category:** Simple Discovery
-**Description:** Simple IP discovery with strict validation
-**Use Cases:**
-- Verify if an IP is IPv4/IPv6
-- Check if address is private/global/multicast
 
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| ip_address | string | Yes | IP address to analyze (7-45 chars) |
-| region | string | No | AWS region (pattern: ^[a-z]{2,3}-[a-z]+-\d+$) |
-
-**Example:**
-```json
-{
-  "tool": "SimpleDiscoverIpDetails",
-  "args": {
-    "ip_address": "192.168.1.1",
-    "region": "us-west-2"
-  }
-}
-```
-
----
-
-### Tool: SimpleListCoreNetworks
-**Category:** Simple Discovery
-**Description:** Simple core network listing with validation
-**Use Cases:** Quick inventory of core networks
-
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| region | string | No | AWS region (pattern: ^[a-z]{2,3}-[a-z]+-\d+$) |
-
-**Example:**
-```json
-{
-  "tool": "SimpleListCoreNetworks",
-  "args": {"region": "us-east-1"}
-}
-```
-
----
 
 ## 🌐 Advanced Discovery Tools
 
@@ -445,7 +401,7 @@ sequenceDiagram
 
 | Category | Tools | Count |
 |----------|-------|--------|
-| Simple Discovery | SimpleDiscoverIpDetails, SimpleListCoreNetworks | 2 |
+| Simple Discovery | (Removed - use discover_ip_details, list_core_networks) | 0 |
 | Advanced Discovery | trace_network_path, list_core_networks, get_global_networks, discover_vpcs, discover_ip_details, validate_ip_cidr | 6 |
 | Network Function Groups | list_network_function_groups, analyze_network_function_group | 2 |
 | CloudWAN Policy | validate_cloudwan_policy, get_core_network_policy, get_core_network_change_set, get_core_network_change_events, analyze_segment_routes | 5 |
@@ -455,4 +411,4 @@ sequenceDiagram
 | Circuit Breaker | get_circuit_breaker_status, get_system_resilience_metrics | 2 |
 | Infrastructure as Code | analyze_iac_firewall_policy, simulate_iac_firewall_traffic, validate_iac_firewall_syntax | 3 |
 
-**Total: 29 Tools**
+**Total: 27 Tools**

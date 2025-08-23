@@ -1,6 +1,11 @@
-import pytest
 import json
-from awslabs.cloudwan_mcp_server.server import get_circuit_breaker_status, get_system_resilience_metrics
+
+import pytest
+
+from awslabs.cloudwan_mcp_server.server import (
+    get_circuit_breaker_status,
+    get_system_resilience_metrics,
+)
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,7 @@
 import json
+
 import pytest
+
 from awslabs.cloudwan_mcp_server.server import list_network_function_groups
 
 

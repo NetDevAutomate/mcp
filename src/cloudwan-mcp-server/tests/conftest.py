@@ -1,7 +1,8 @@
 """Pytest configuration and shared fixtures for CloudWAN MCP Server tests."""
 
+from unittest.mock import AsyncMock, patch
+
 import pytest
-from unittest.mock import patch, AsyncMock
 
 
 @pytest.fixture
@@ -19,7 +20,7 @@ def mock_aws_client():
     # Added security pragma for mock credentials
     mock_client.get_credentials.return_value = {
         "AccessKeyId": "TESTKEY123",
-        "SecretAccessKey": "SECRETTESTKEY",  # pragma: allowlist secret
+        "SecretAccessKey": "SECRETTESTKEY",  # pragma: allowlist secret # pragma: allowlist secret
     }
 
     return mock_client
@@ -28,7 +29,10 @@ def mock_aws_client():
 @pytest.fixture
 def mock_get_aws_client(mock_aws_client):
     """Mock the get_aws_client function."""
-    with patch("awslabs.cloudwan_mcp_server.server.get_aws_client", return_value=mock_aws_client):
+    with patch(
+        "awslabs.cloudwan_mcp_server.server.get_aws_client",
+        return_value=mock_aws_client,
+    ):
         yield mock_aws_client
 
 

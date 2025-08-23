@@ -1,6 +1,8 @@
-import pytest
 import json
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from awslabs.cloudwan_mcp_server.server import aws_config_manager
 
 
@@ -12,14 +14,23 @@ class TestConfigTools:
         mock_boto_client.return_value = mock_client
 
         # Added security pragma to allowlist credential patterns
-        mock_client.get_credentials.return_value = AsyncMock(
+        mock_client.get_credentials = AsyncMock(
             return_value={
-                "AccessKeyId": "ASIA123TEST",  # pragma: allowlist secret
-                "SecretAccessKey": "SECRETKEYTEST",  # pragma: allowlist secret
+                "AccessKeyId": "ASIA123TEST",
+                "SecretAccessKey": "SECRETKEYTEST",
             }
         )
 
-        for op in ["get", "set", "list", "reset", "get_profile", "get_region", "list_profiles", "check_credentials"]:
+        for op in [
+            "get",
+            "set",
+            "list",
+            "reset",
+            "get_profile",
+            "get_region",
+            "list_profiles",
+            "check_credentials",
+        ]:
             result = await aws_config_manager(op, "default", "us-east-1")
             data = json.loads(result)
             assert data["success"]

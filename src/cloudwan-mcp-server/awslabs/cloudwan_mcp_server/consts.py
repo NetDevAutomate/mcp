@@ -31,7 +31,7 @@ MCP_SERVER_DESCRIPTION: Final[str] = "AWS CloudWAN MCP Server - Advanced network
 class ErrorCode(Enum):
     """Error codes for CloudWAN MCP Server."""
 
-    AWS_ERROR = "AWS_ERROR"
+    AWS_ERROR = "AWS_SERVICE_ERROR"
     INVALID_INPUT = "INVALID_INPUT"
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
     AWS_CLIENT_ERROR = "AWS_CLIENT_ERROR"

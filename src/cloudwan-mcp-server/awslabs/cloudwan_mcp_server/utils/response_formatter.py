@@ -21,7 +21,11 @@ from typing import Any, Dict, Optional
 
 def format_success_response(data: Any, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Format successful response with consistent structure."""
-    response = {"status": "success", "data": data, "timestamp": datetime.utcnow().isoformat()}
+    response = {
+        "status": "success",
+        "data": data,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
 
     if metadata:
         response["metadata"] = metadata

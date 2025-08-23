@@ -106,7 +106,10 @@ class ThreadSafeAWSClientCache:
                 new_client = session.client(**client_kwargs)
 
                 # Store in cache
-                self._cache[cache_key] = {"client": new_client, "timestamp": current_time}
+                self._cache[cache_key] = {
+                    "client": new_client,
+                    "timestamp": current_time,
+                }
 
                 return new_client
 
@@ -122,7 +125,11 @@ class ThreadSafeAWSClientCache:
     def cache_stats(self) -> dict[str, Any]:
         """Return cache performance statistics."""
         with self._lock:
-            return {"total_entries": len(self._cache), "max_size": self._max_size, "max_age": self._max_age}
+            return {
+                "total_entries": len(self._cache),
+                "max_size": self._max_size,
+                "max_age": self._max_age,
+            }
 
 
 # Global thread-safe client cache instance
