@@ -20,6 +20,8 @@ from typing import Any
 
 import boto3
 from botocore.client import BaseClient
+from circuitbreaker import circuit
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 
 class ThreadSafeAWSClientCache:
@@ -66,6 +68,8 @@ class ThreadSafeAWSClientCache:
 
             self._last_prune = current_time
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, max=10))
+    @circuit(failure_threshold=5, recovery_timeout=60)
     def get_client(self, service: str, region: str | None = None, profile: str | None = None) -> BaseClient:
         """Thread-safe method to retrieve or create AWS client.
 

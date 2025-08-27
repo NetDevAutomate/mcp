@@ -1,8 +1,9 @@
 """Clean Discovery tools tests - NO Simple* duplicates."""
 
 import json
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from awslabs.cloudwan_mcp_server.server import (
     discover_ip_details,
@@ -37,7 +38,7 @@ class TestCleanDiscoveryTools:
         mock_client = MagicMock()
         mock_client.list_core_networks.return_value = {"CoreNetworks": []}
         mock_get_client.return_value = mock_client
-        
+
         result = await list_core_networks()
         data = json.loads(result)
         assert data["success"] is True
@@ -58,7 +59,7 @@ class TestCleanDiscoveryTools:
         mock_client = MagicMock()
         mock_client.describe_global_networks.return_value = {"GlobalNetworks": []}
         mock_get_client.return_value = mock_client
-        
+
         result = await get_global_networks()
         data = json.loads(result)
         assert data["success"] is True
@@ -70,7 +71,7 @@ class TestCleanDiscoveryTools:
         mock_client = MagicMock()
         mock_client.describe_vpcs.return_value = {"Vpcs": []}
         mock_get_client.return_value = mock_client
-        
+
         result = await discover_vpcs()
         data = json.loads(result)
         assert data["success"] is True

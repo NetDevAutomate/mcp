@@ -47,12 +47,10 @@ class TestAllDiscoveryTools:
     async def test_simple_list_core_networks_success(self, mock_boto_client):
         mock_client = AsyncMock()
         mock_client.list_core_networks.return_value = {
-            "CoreNetworks": [
-                {"CoreNetworkId": "cn-123", "State": "AVAILABLE"}
-            ]
+            "CoreNetworks": [{"CoreNetworkId": "cn-123", "State": "AVAILABLE"}]
         }
         mock_boto_client.return_value = mock_client
-        
+
         result = await simple_list_core_networks("us-east-1")
         data = json.loads(result)
         assert data["success"] is True
@@ -89,7 +87,7 @@ class TestAllDiscoveryTools:
         mock_client = AsyncMock()
         mock_client.list_core_networks.return_value = {"CoreNetworks": []}
         mock_boto_client.return_value = mock_client
-        
+
         result = await list_core_networks()
         data = json.loads(result)
         assert data["success"] is True
@@ -101,7 +99,7 @@ class TestAllDiscoveryTools:
         mock_client = AsyncMock()
         mock_client.describe_global_networks.return_value = {"GlobalNetworks": []}
         mock_boto_client.return_value = mock_client
-        
+
         result = await get_global_networks()
         data = json.loads(result)
         assert data["success"] is True
@@ -113,13 +111,13 @@ class TestAllDiscoveryTools:
         mock_client = AsyncMock()
         mock_client.describe_vpcs.return_value = {"Vpcs": []}
         mock_boto_client.return_value = mock_client
-        
+
         result = await discover_vpcs()
         data = json.loads(result)
         assert data["success"] is True
         assert "vpcs" in data
 
-    # Tool 7: discover_ip_details  
+    # Tool 7: discover_ip_details
     async def test_discover_ip_details_valid(self):
         result = await discover_ip_details("192.168.1.1")
         data = json.loads(result)

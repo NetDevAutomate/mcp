@@ -39,11 +39,9 @@ class TestAllPolicyTGWTools:
     @patch("awslabs.cloudwan_mcp_server.server.get_aws_client")
     async def test_get_core_network_policy_success(self, mock_get_client):
         mock_client = MagicMock()
-        mock_client.get_core_network_policy.return_value = {
-            "CoreNetworkPolicy": {"PolicyVersion": "1"}
-        }
+        mock_client.get_core_network_policy.return_value = {"CoreNetworkPolicy": {"PolicyVersion": "1"}}
         mock_get_client.return_value = mock_client
-        
+
         result = await get_core_network_policy("cn-123")
         data = json.loads(result)
         assert data["success"] is True
@@ -53,11 +51,9 @@ class TestAllPolicyTGWTools:
     @patch("awslabs.cloudwan_mcp_server.server.get_aws_client")
     async def test_get_core_network_change_set_success(self, mock_get_client):
         mock_client = MagicMock()
-        mock_client.get_core_network_change_set.return_value = {
-            "CoreNetworkChanges": [{"ChangeType": "CREATE"}]
-        }
+        mock_client.get_core_network_change_set.return_value = {"CoreNetworkChanges": [{"ChangeType": "CREATE"}]}
         mock_get_client.return_value = mock_client
-        
+
         result = await get_core_network_change_set("cn-123", "pv-1")
         data = json.loads(result)
         assert data["success"] is True
@@ -67,11 +63,9 @@ class TestAllPolicyTGWTools:
     @patch("awslabs.cloudwan_mcp_server.server.get_aws_client")
     async def test_get_core_network_change_events_success(self, mock_get_client):
         mock_client = MagicMock()
-        mock_client.get_core_network_change_events.return_value = {
-            "CoreNetworkChangeEvents": [{"Status": "COMPLETE"}]
-        }
+        mock_client.get_core_network_change_events.return_value = {"CoreNetworkChangeEvents": [{"Status": "COMPLETE"}]}
         mock_get_client.return_value = mock_client
-        
+
         result = await get_core_network_change_events("cn-123", "pv-1")
         data = json.loads(result)
         assert data["success"] is True
@@ -81,11 +75,9 @@ class TestAllPolicyTGWTools:
     @patch("awslabs.cloudwan_mcp_server.server.get_aws_client")
     async def test_analyze_segment_routes_success(self, mock_get_client):
         mock_client = MagicMock()
-        mock_client.get_core_network_policy.return_value = {
-            "CoreNetworkPolicy": {"PolicyVersionId": "1"}
-        }
+        mock_client.get_core_network_policy.return_value = {"CoreNetworkPolicy": {"PolicyVersionId": "1"}}
         mock_get_client.return_value = mock_client
-        
+
         result = await analyze_segment_routes("cn-123", "prod")
         data = json.loads(result)
         assert data["success"] is True
@@ -112,7 +104,7 @@ class TestAllPolicyTGWTools:
             "Routes": [{"DestinationCidrBlock": "10.0.0.0/16", "State": "active"}]
         }
         mock_get_client.return_value = mock_client
-        
+
         result = await analyze_tgw_routes("rtb-123")
         data = json.loads(result)
         assert data["success"] is True
@@ -126,7 +118,7 @@ class TestAllPolicyTGWTools:
             "TransitGatewayPeeringAttachments": [{"State": "available"}]
         }
         mock_get_client.return_value = mock_client
-        
+
         result = await analyze_tgw_peers("peer-123")
         data = json.loads(result)
         assert data["success"] is True

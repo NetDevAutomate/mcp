@@ -39,10 +39,12 @@ def validate_ip_address(ip: str) -> bool:
 
 
 def validate_cidr_block(cidr: str) -> bool:
-    """Validate CIDR block format."""
+    """Validate CIDR format with AWS constraints"""
     try:
-        ipaddress.ip_network(cidr, strict=False)
-        return True
+        network = ipaddress.ip_network(cidr, strict=False)
+        if network.version == 4:
+            return network.prefixlen >= 16 and network.prefixlen <= 28
+        return network.prefixlen >= 56 and network.prefixlen <= 64
     except ValueError:
         return False
 

@@ -45,7 +45,7 @@ class TestAllAdvancedTools:
         assert "analysis" in data
 
     async def test_analyze_iac_firewall_policy_cloudformation(self):
-        content = 'Resources: NetworkFirewallRuleGroup: Type: AWS::NetworkFirewall::RuleGroup'
+        content = "Resources: NetworkFirewallRuleGroup: Type: AWS::NetworkFirewall::RuleGroup"
         result = await analyze_iac_firewall_policy(content, "cloudformation")
         data = json.loads(result)
         assert data["success"] is True

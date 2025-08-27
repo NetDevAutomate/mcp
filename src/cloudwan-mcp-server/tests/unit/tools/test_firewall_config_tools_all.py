@@ -23,11 +23,9 @@ class TestAllFirewallConfigTools:
     @patch("awslabs.cloudwan_mcp_server.server.get_aws_client")
     async def test_monitor_anfw_logs_success(self, mock_get_client):
         mock_client = MagicMock()
-        mock_client.filter_log_events.return_value = {
-            "events": [{"timestamp": 123456, "message": "ALLOW TCP"}]
-        }
+        mock_client.filter_log_events.return_value = {"events": [{"timestamp": 123456, "message": "ALLOW TCP"}]}
         mock_get_client.return_value = mock_client
-        
+
         result = await monitor_anfw_logs("test-firewall")
         data = json.loads(result)
         assert data["success"] is True
@@ -37,11 +35,9 @@ class TestAllFirewallConfigTools:
     @patch("awslabs.cloudwan_mcp_server.server.get_aws_client")
     async def test_analyze_anfw_policy_success(self, mock_get_client):
         mock_client = MagicMock()
-        mock_client.describe_firewall_policy.return_value = {
-            "FirewallPolicy": {"StatelessRuleGroups": []}
-        }
+        mock_client.describe_firewall_policy.return_value = {"FirewallPolicy": {"StatelessRuleGroups": []}}
         mock_get_client.return_value = mock_client
-        
+
         result = await analyze_anfw_policy("arn:aws:network-firewall::policy/test")
         data = json.loads(result)
         assert data["success"] is True

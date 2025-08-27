@@ -17,7 +17,7 @@ class TestConfigTools:
         mock_client.get_credentials = AsyncMock(
             return_value={
                 "AccessKeyId": "ASIA123TEST",
-                "SecretAccessKey": "SECRETKEYTEST",
+                "SecretAccessKey": "SECRETKEYTEST",  # pragma: allowlist secret
             }
         )
 
